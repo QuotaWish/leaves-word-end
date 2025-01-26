@@ -3,11 +3,13 @@ package com.quotawish.leaveword.utils;
 import cn.hutool.http.HttpConnection;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 
+@Slf4j
 public class SynthesizeUtil {
 
     static final String END_URL = "http://tts.tagzxia.com/v1/audio/speech";
@@ -17,6 +19,8 @@ public class SynthesizeUtil {
      * 发送 POST 请求，并且返回音频文件流
      */
     public static byte[] synthesize(String voice, String input) {
+        log.info("[VoiceSynthesize] Using voice " + voice + " for " + input);
+
         return HttpUtil.createPost(END_URL)
                 .header("Authorization", "Bearer " + API_KEY)
                 .body(

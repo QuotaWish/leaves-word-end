@@ -42,9 +42,9 @@ public class EnglishWordQueryRequest extends PageRequest implements Serializable
     private String content;
 
     /**
-     * 标签列表
+     * 当前状态
      */
-    private List<String> tags;
+    private String status;
 
     /**
      * 创建用户 id

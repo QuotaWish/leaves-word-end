@@ -104,4 +104,18 @@ oss:
     accessKey: M_jzctQ5iOiogRDbb7M78y2xoSYmKU1W7s8SuOy2
     secretKey: wYS-gmmwdiE7RCDOkZ8yZptxlTD8EnpDout5Q1CC
     bucket: leaves-words
-    url: im2.quotawish.com
+    url: img2.quotawish.com
+
+coze:
+  workflow: 7463390759002275894
+  oauth:
+    jwt:
+      clientId:
+      key:
+        private:
+          main:
+          path:
+        public:
+          main:
+    pat: pat_wRaxoZvvJzSW9tHK0ELzVayjGwSKNnodhrMeduaLeSQQ4fLcC19DoLF9TlfXxwrB
+

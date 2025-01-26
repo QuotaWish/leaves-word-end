@@ -45,6 +45,10 @@ public interface AudioFileService extends IService<AudioFile> {
     /**
      * 合成音频文件
      */
-    void synthesizeAudioFile(long id, String voice);
+    void synthesizeAudioFile(long id);
 
+    /**
+     * 上传音频文件
+     */
+    void uploadAudioFile(long id);
 }

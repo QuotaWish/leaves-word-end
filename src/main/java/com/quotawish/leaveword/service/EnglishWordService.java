@@ -17,14 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 public interface EnglishWordService extends IService<EnglishWord> {
 
     /**
-     * 校验数据
-     *
-     * @param english_word
-     * @param add 对创建的数据进行校验
-     */
-    void validEnglishWord(EnglishWord english_word, boolean add);
-
-    /**
      * 获取查询条件
      *
      * @param english_wordQueryRequest

@@ -7,14 +7,15 @@
     <resultMap id="BaseResultMap" type="com.quotawish.leaveword.model.entity.english.word.EnglishWord">
             <id property="id" column="id" />
             <result property="word_head" column="word_head" />
-            <result property="info" column="TEXT" />
+            <result property="info" column="info" />
+            <result property="status" column="status" />
             <result property="create_time" column="create_time" />
             <result property="update_time" column="update_time" />
             <result property="is_delete" column="is_delete" />
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,word_head,info,create_time,update_time,
+        id,word_head,info,status,create_time,update_time,
         is_delete
     </sql>
 </mapper>

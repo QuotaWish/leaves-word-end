@@ -3,6 +3,7 @@ package com.quotawish.leaveword.controller;
 import cn.hutool.core.codec.Base64;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.quotawish.leaveword.annotation.AuthCheck;
 import com.quotawish.leaveword.common.BaseResponse;
@@ -53,6 +54,7 @@ public class AudioFileController {
      * @return
      */
     @PostMapping("/add")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Long> addAudioFile(@RequestBody AudioFileAddRequest audio_fileAddRequest, HttpServletRequest request) {
         // 申请合成 然后就创建一条数据库记录 等待后续合成
         AudioFile audio_file = new AudioFile();
@@ -62,9 +64,9 @@ public class AudioFileController {
         audio_file.setStatus(AudioFileStatus.IN_QUEUE);
         audio_file.setCreator_id(loginUser.getId());
 
-        // 这个 content 是个json字段
         JSONObject jsonObject = JSONUtil.createObj()
                 .putOnce("value", audio_file.getContent())
+                .putOnce("voice", audio_fileAddRequest.getVoice())
                 .putOnce("err", "");
 
         audio_file.setContent(Base64.encode(jsonObject.toString()));
@@ -81,17 +83,36 @@ public class AudioFileController {
      * 针对某个File进行合成操作
      */
     @PostMapping("/synthesize")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> synthesize(@RequestBody AudioFileSynthesizeRequest audioFileSynthesizeRequest, HttpServletRequest request) {
-        User user = userService.getLoginUser(request);
 
-        audio_fileService.synthesizeAudioFile(audioFileSynthesizeRequest.getId(), audioFileSynthesizeRequest.getVoice());
+        audio_fileService.synthesizeAudioFile(audioFileSynthesizeRequest.getId());
 
         return ResultUtils.success(true);
     }
 
     /**
+     * 搜索音频文件
+     */
+    @PostMapping("/search")
+    public BaseResponse<Page<AudioFileVO>> searchAudioFile(@RequestBody AudioFileQueryRequest audio_fileQueryRequest, HttpServletRequest request) {
+
+        QueryWrapper<AudioFile> audioFilePage = audio_fileService.getQueryWrapper(audio_fileQueryRequest);
+        Page<AudioFile> page = audio_fileService.page(new Page<>(audio_fileQueryRequest.getCurrent(), audio_fileQueryRequest.getPageSize()), audioFilePage);
+
+        return ResultUtils.success(audio_fileService.getAudioFileVOPage(page, request));
+    }
+
+    /**
      * 上传某个音频
      */
+    @PostMapping("/upload")
+    public BaseResponse<Boolean> uploadAudioFile(@RequestBody AudioFileQueryRequest audio_fileQueryRequest) {
+
+        audio_fileService.uploadAudioFile(audio_fileQueryRequest.getId());
+
+        return ResultUtils.success(true);
+    }
 
     /**
      * 删除音频文件表

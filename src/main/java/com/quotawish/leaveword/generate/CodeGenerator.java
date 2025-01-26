@@ -29,9 +29,9 @@ public class CodeGenerator {
     public static void main(String[] args) throws TemplateException, IOException {
         // 指定生成参数
         String packageName = "com.quotawish.leaveword";
-        String dataName = "音频文件表";
-        String dataKey = "audio_file";
-        String upperDataKey = "AudioFile";
+        String dataName = "媒体创建表";
+        String dataKey = "media_creator";
+        String upperDataKey = "MediaCreator";
 
         // 封装生成参数
         Map<String, Object> dataModel = new HashMap<>();

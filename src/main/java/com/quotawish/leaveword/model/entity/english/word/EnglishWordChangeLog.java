@@ -9,6 +9,7 @@ import java.util.Date;
 
 /**
  * 单词变更记录表
+ * 只有在发布之后才会存储 方便回滚
  * @TableName english_word_change_log
  */
 @TableName(value ="english_word_change_log")

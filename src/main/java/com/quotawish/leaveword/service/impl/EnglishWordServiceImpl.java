@@ -37,18 +37,6 @@ public class EnglishWordServiceImpl extends ServiceImpl<EnglishWordMapper, Engli
     private UserService userService;
 
     /**
-     * 校验数据
-     *
-     * @param english_word
-     * @param add      对创建的数据进行校验
-     */
-    @Override
-    public void validEnglishWord(EnglishWord english_word, boolean add) {
-        ThrowUtils.throwIf(english_word == null, ErrorCode.PARAMS_ERROR);
-
-    }
-
-    /**
      * 获取查询条件
      *
      * @param english_wordQueryRequest
@@ -68,7 +56,6 @@ public class EnglishWordServiceImpl extends ServiceImpl<EnglishWordMapper, Engli
         String searchText = english_wordQueryRequest.getSearchText();
         String sortField = english_wordQueryRequest.getSortField();
         String sortOrder = english_wordQueryRequest.getSortOrder();
-        List<String> tagList = english_wordQueryRequest.getTags();
         Long userId = english_wordQueryRequest.getUserId();
         // todo 补充需要的查询条件
         // 从多字段中搜索
@@ -79,12 +66,7 @@ public class EnglishWordServiceImpl extends ServiceImpl<EnglishWordMapper, Engli
         // 模糊查询
         queryWrapper.like(StringUtils.isNotBlank(title), "title", title);
         queryWrapper.like(StringUtils.isNotBlank(content), "content", content);
-        // JSON 数组查询
-        if (CollUtil.isNotEmpty(tagList)) {
-            for (String tag : tagList) {
-                queryWrapper.like("tags", "\"" + tag + "\"");
-            }
-        }
+
         // 精确查询
         queryWrapper.ne(ObjectUtils.isNotEmpty(notId), "id", notId);
         queryWrapper.eq(ObjectUtils.isNotEmpty(id), "id", id);

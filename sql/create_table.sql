@@ -75,6 +75,10 @@ CREATE TABLE english_word (
     is_delete TINYINT(1) DEFAULT 0
 ) COMMENT='单词表';
 
+ALTER TABLE english_word
+    ADD COLUMN status VARCHAR(255) NULL COMMENT '当前状态';
+
+
 -- 单词变更记录表
 CREATE TABLE english_word_change_log (
     id BIGINT PRIMARY KEY COMMENT 'id',
@@ -104,11 +108,11 @@ CREATE TABLE english_dictionary (
 
 CREATE TABLE audio_file (
                             id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                            path VARCHAR(255) NOT NULL,
-                            content TEXT,
+                            path VARCHAR(255),
+                            content MEDIUMTEXT,
                             creator_id BIGINT,
-                            create_time DATETIME,
-                            update_time DATETIME,
+                            create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+                            update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                             is_delete INT DEFAULT 0,
                             FOREIGN KEY (creator_id) REFERENCES user(id)
 ) COMMENT='音频文件表';
@@ -118,3 +122,27 @@ ALTER TABLE audio_file
 
 ALTER TABLE audio_file
     ADD COLUMN name VARCHAR(255) NOT NULL DEFAULT '默认音频文件';
+
+
+CREATE TABLE word_status_change (
+                                    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT 'id',
+                                    word_id BIGINT NOT NULL COMMENT '单词ID',
+                                    status VARCHAR(255) NOT NULL COMMENT '变更状态',
+                                    info VARCHAR(255) COMMENT '变更信息',
+                                    comment VARCHAR(255) COMMENT '评论',
+                                    create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                    is_delete INT DEFAULT 0 COMMENT '是否删除'
+) COMMENT='单词状态变更记录表';
+
+
+CREATE TABLE media_creator (
+                               id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                               word_id BIGINT NOT NULL,
+                               media_type VARCHAR(50) NOT NULL,
+                               media_url VARCHAR(255),
+                               creator_id BIGINT DEFAULT NULL,
+                               info TEXT,
+                               created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                               FOREIGN KEY (word_id) REFERENCES english_word(id)
+);

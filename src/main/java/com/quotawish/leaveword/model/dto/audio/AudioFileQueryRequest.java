@@ -26,10 +26,10 @@ public class AudioFileQueryRequest extends PageRequest implements Serializable {
     private Long id;
 
     /**
-     * 音频文件的路径。
+     * 音频文件的标题。
      */
     @NotNull(message = "搜索条件不能为空")
-    private String query;
+    private String name;
 
     /**
      * 音频文件的内容。

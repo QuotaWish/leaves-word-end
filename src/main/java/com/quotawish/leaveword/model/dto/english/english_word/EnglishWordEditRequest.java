@@ -29,9 +29,9 @@ public class EnglishWordEditRequest implements Serializable {
     private String content;
 
     /**
-     * 标签列表
+     * 当前状态
      */
-    private List<String> tags;
+    private String status;
 
     private static final long serialVersionUID = 1L;
 }

@@ -15,11 +15,13 @@ import com.quotawish.leaveword.model.dto.english.english_word.EnglishWordQueryRe
 import com.quotawish.leaveword.model.dto.english.english_word.EnglishWordUpdateRequest;
 import com.quotawish.leaveword.model.entity.User;
 import com.quotawish.leaveword.model.entity.english.word.EnglishWord;
+import com.quotawish.leaveword.model.enums.WordStatus;
 import com.quotawish.leaveword.model.vo.english.EnglishWordVO;
 import com.quotawish.leaveword.service.EnglishWordService;
 import com.quotawish.leaveword.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -51,20 +53,16 @@ public class EnglishWordController {
      * @return
      */
     @PostMapping("/add")
-    public BaseResponse<Long> addEnglishWord(@RequestBody EnglishWordAddRequest english_wordAddRequest, HttpServletRequest request) {
-        ThrowUtils.throwIf(english_wordAddRequest == null, ErrorCode.PARAMS_ERROR);
-        // todo 在此处将实体类和 DTO 进行转换
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Long> addEnglishWord(@RequestBody @Validated EnglishWordAddRequest english_wordAddRequest, HttpServletRequest request) {
         EnglishWord english_word = new EnglishWord();
         BeanUtils.copyProperties(english_wordAddRequest, english_word);
-        // 数据校验
-        english_wordService.validEnglishWord(english_word, true);
-        // todo 填充默认值
-//        User loginUser = userService.getLoginUser(request);
-//        english_word.setUserId(loginUser.getId());
-        // 写入数据库
+
+        english_word.setStatus(WordStatus.CREATED.name());
+
         boolean result = english_wordService.save(english_word);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
-        // 返回新写入的数据 id
+
         long newEnglishWordId = english_word.getId();
         return ResultUtils.success(newEnglishWordId);
     }
@@ -104,22 +102,17 @@ public class EnglishWordController {
      */
     @PostMapping("/update")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<Boolean> updateEnglishWord(@RequestBody EnglishWordUpdateRequest english_wordUpdateRequest) {
-        if (english_wordUpdateRequest == null || english_wordUpdateRequest.getId() <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        // todo 在此处将实体类和 DTO 进行转换
+    public BaseResponse<Boolean> updateEnglishWord(@RequestBody @Validated EnglishWordUpdateRequest english_wordUpdateRequest) {
         EnglishWord english_word = new EnglishWord();
         BeanUtils.copyProperties(english_wordUpdateRequest, english_word);
-        // 数据校验
-        english_wordService.validEnglishWord(english_word, false);
-        // 判断是否存在
+
         long id = english_wordUpdateRequest.getId();
         EnglishWord oldEnglishWord = english_wordService.getById(id);
         ThrowUtils.throwIf(oldEnglishWord == null, ErrorCode.NOT_FOUND_ERROR);
-        // 操作数据库
+
         boolean result = english_wordService.updateById(english_word);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
+
         return ResultUtils.success(true);
     }
 
@@ -201,38 +194,5 @@ public class EnglishWordController {
         // 获取封装类
         return ResultUtils.success(english_wordService.getEnglishWordVOPage(english_wordPage, request));
     }
-
-    /**
-     * 编辑英语单词（给用户使用）
-     *
-     * @param english_wordEditRequest
-     * @param request
-     * @return
-     */
-    @PostMapping("/edit")
-    public BaseResponse<Boolean> editEnglishWord(@RequestBody EnglishWordEditRequest english_wordEditRequest, HttpServletRequest request) {
-        if (english_wordEditRequest == null || english_wordEditRequest.getId() <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        // todo 在此处将实体类和 DTO 进行转换
-        EnglishWord english_word = new EnglishWord();
-        BeanUtils.copyProperties(english_wordEditRequest, english_word);
-        // 数据校验
-        english_wordService.validEnglishWord(english_word, false);
-        User loginUser = userService.getLoginUser(request);
-        // 判断是否存在
-        long id = english_wordEditRequest.getId();
-        EnglishWord oldEnglishWord = english_wordService.getById(id);
-        ThrowUtils.throwIf(oldEnglishWord == null, ErrorCode.NOT_FOUND_ERROR);
-        // 仅本人或管理员可编辑
-        if (!userService.isAdmin(loginUser)) {
-            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
-        }
-        // 操作数据库
-        boolean result = english_wordService.updateById(english_word);
-        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
-        return ResultUtils.success(true);
-    }
-
     // endregion
 }

@@ -48,9 +48,9 @@ public class EnglishWordVO implements Serializable {
     private Date updateTime;
 
     /**
-     * 标签列表
+     * 当前状态
      */
-    private List<String> tagList;
+    private String status;
 
     /**
      * 创建用户信息

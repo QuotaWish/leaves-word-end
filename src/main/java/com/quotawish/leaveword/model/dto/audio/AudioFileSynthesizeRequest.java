@@ -1,7 +1,9 @@
 package com.quotawish.leaveword.model.dto.audio;
 
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 
 /**
@@ -15,10 +17,6 @@ public class AudioFileSynthesizeRequest implements Serializable {
     /**
      * 音频文件的唯一标识符
      */
+    @NotBlank(message = "音频ID不能为空")
     private Long id;
-
-    /**
-     * 音频文件的音色。
-     */
-    private String voice;
 }

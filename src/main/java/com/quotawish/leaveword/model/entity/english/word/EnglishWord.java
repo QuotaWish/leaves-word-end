@@ -47,6 +47,11 @@ public class EnglishWord implements Serializable {
     @TableLogic
     private Integer is_delete;
 
+    /**
+     * 审核状态
+     */
+    private String status;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 

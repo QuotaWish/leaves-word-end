@@ -19,14 +19,18 @@ import com.quotawish.leaveword.model.vo.UserVO;
 import com.quotawish.leaveword.model.vo.audio.AudioFileVO;
 import com.quotawish.leaveword.service.AudioFileService;
 import com.quotawish.leaveword.mapper.AudioFileMapper;
+import com.quotawish.leaveword.service.UploadImageService;
 import com.quotawish.leaveword.service.UserService;
 import com.quotawish.leaveword.utils.SqlUtils;
 import com.quotawish.leaveword.utils.SynthesizeUtil;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,6 +45,9 @@ public class AudioFileServiceImpl extends ServiceImpl<AudioFileMapper, AudioFile
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private UploadImageService uploadImageService;
 
     /**
      * 获取查询条件
@@ -57,7 +64,7 @@ public class AudioFileServiceImpl extends ServiceImpl<AudioFileMapper, AudioFile
 
         Long id = audio_fileQueryRequest.getId();
         String content = audio_fileQueryRequest.getContent();
-        String searchText= audio_fileQueryRequest.getQuery();
+        String searchText= audio_fileQueryRequest.getName();
 
         String sortField = audio_fileQueryRequest.getSortField();
         String sortOrder = audio_fileQueryRequest.getSortOrder();
@@ -65,7 +72,7 @@ public class AudioFileServiceImpl extends ServiceImpl<AudioFileMapper, AudioFile
         // 从多字段中搜索
         if (StringUtils.isNotBlank(searchText)) {
             // 需要拼接查询条件
-            queryWrapper.and(qw -> qw.like("title", searchText).or().like("content", searchText));
+            queryWrapper.and(qw -> qw.like("name", searchText).or().like("content", searchText));
         }
 
         queryWrapper.like(StringUtils.isNotBlank(content), "content", content);
@@ -117,8 +124,8 @@ public class AudioFileServiceImpl extends ServiceImpl<AudioFileMapper, AudioFile
 
     @Async
     @Override
-    public void synthesizeAudioFile(long id, String voice) {
-        //调用工具类进行合成 并且上传文件流
+    public void synthesizeAudioFile(long id) {
+        //调用工具类进行合成
         // 先获取到对应的AudioFile
         AudioFile audioFile = getById(id);
         if (audioFile == null) {
@@ -131,13 +138,17 @@ public class AudioFileServiceImpl extends ServiceImpl<AudioFileMapper, AudioFile
             throw new RuntimeException("音频文件内容不能为空");
         }
 
-        JSONObject jsonObject = new JSONObject(content);
+        String decodedContent = Base64.decodeStr(content);
+
+        JSONObject jsonObject = new JSONObject(decodedContent);
 
         String value = jsonObject.getStr("value");
 
         if (StringUtils.isBlank(value)) {
             throw new RuntimeException("音频文件内容不能为空");
         }
+
+        String voice = jsonObject.getStr("voice");
 
         audioFile.setStatus(AudioFileStatus.SYNTHESIZING);
 
@@ -149,13 +160,47 @@ public class AudioFileServiceImpl extends ServiceImpl<AudioFileMapper, AudioFile
         // 把 result 转为 base64
         String base64 = Base64.encode(result);
 
-        jsonObject.put("audio", base64);
+        jsonObject.putOnce("audio", base64);
 
         audioFile.setContent(Base64.encode(jsonObject.toString()));
         audioFile.setStatus(AudioFileStatus.PROCESSED);
 
         updateById(audioFile);
 
+    }
+
+    @Override
+    public void uploadAudioFile(long id) {
+        AudioFile audioFile = getById(id);
+        if (audioFile == null) {
+            throw new RuntimeException("音频文件不存在");
+        }
+
+        String content = audioFile.getContent();
+        if (StringUtils.isBlank(content)) {
+            throw new RuntimeException("音频文件内容不能为空");
+        }
+
+        String decodedContent = Base64.decodeStr(content);
+
+        JSONObject jsonObject = new JSONObject(decodedContent);
+
+        audioFile.setStatus(AudioFileStatus.UPLOADING);
+
+        // 把 audio 取出来
+        String audio = jsonObject.getStr("audio");
+
+        byte[] audioBytes = Base64.decode(audio);
+        ByteArrayInputStream audioInputStream = new ByteArrayInputStream(audioBytes);
+
+        String url = uploadImageService.uploadFile(id + ".mpeg", audioInputStream);
+
+        jsonObject.putOnce("url", url);
+        audioFile.setContent(Base64.encode(jsonObject.toString()));
+        audioFile.setStatus(AudioFileStatus.UPLOADED);
+        audioFile.setPath(url);
+
+        updateById(audioFile);
     }
 
 }
