@@ -10,7 +10,6 @@ import com.quotawish.leaveword.constant.UserConstant;
 import com.quotawish.leaveword.exception.BusinessException;
 import com.quotawish.leaveword.exception.ThrowUtils;
 import com.quotawish.leaveword.model.dto.english.english_word.EnglishWordAddRequest;
-import com.quotawish.leaveword.model.dto.english.english_word.EnglishWordEditRequest;
 import com.quotawish.leaveword.model.dto.english.english_word.EnglishWordQueryRequest;
 import com.quotawish.leaveword.model.dto.english.english_word.EnglishWordUpdateRequest;
 import com.quotawish.leaveword.model.entity.User;
