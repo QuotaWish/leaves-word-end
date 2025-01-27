@@ -8,8 +8,11 @@ import com.quotawish.leaveword.common.ErrorCode;
 import com.quotawish.leaveword.constant.CommonConstant;
 import com.quotawish.leaveword.exception.ThrowUtils;
 import com.quotawish.leaveword.mapper.EnglishWordMapper;
+import com.quotawish.leaveword.model.dto.english.english_word.EnglishWordAddBatchRequest;
+import com.quotawish.leaveword.model.dto.english.english_word.EnglishWordAddRequest;
 import com.quotawish.leaveword.model.dto.english.english_word.EnglishWordQueryRequest;
 import com.quotawish.leaveword.model.entity.english.word.EnglishWord;
+import com.quotawish.leaveword.model.enums.WordStatus;
 import com.quotawish.leaveword.model.vo.english.EnglishWordVO;
 import com.quotawish.leaveword.service.EnglishWordService;
 import com.quotawish.leaveword.service.UserService;
@@ -17,12 +20,14 @@ import com.quotawish.leaveword.utils.SqlUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 英语单词服务实现
@@ -114,6 +119,94 @@ public class EnglishWordServiceImpl extends ServiceImpl<EnglishWordMapper, Engli
 
         english_wordVOPage.setRecords(english_wordVOList);
         return english_wordVOPage;
+    }
+
+    @Override
+    public int[] batchImportEnglishWord(EnglishWordAddBatchRequest request) {
+        Collection<EnglishWordAddRequest> words = request.getWords();
+
+Stream<EnglishWord> englishWordStream = words.stream().map(word -> {
+    EnglishWord english_word = new EnglishWord();
+
+    english_word.setWord_head(word.getWord_head());
+    english_word.setInfo(word.getInfo());
+
+    if (english_word.getInfo() == null) {
+        english_word.setStatus(WordStatus.CREATED.name());
+        return english_word;
+    }
+
+    // 进行初步校验english word 符合指定格式标记一下
+    try {
+        boolean standardFormat = EnglishWord.isStandardFormat(word.getInfo());
+
+        if (standardFormat) {
+            english_word.setStatus(WordStatus.PROCESSED.name());
+        } else {
+            english_word.setStatus(WordStatus.DATA_FORMAT_ERROR.name());
+        }
+
+    } catch (Exception e) {
+        english_word.setStatus(WordStatus.UNKNOWN.name());
+    }
+
+    return english_word;
+});
+
+// 把 englishWordStream 转成list
+List<EnglishWord> englishWordList = englishWordStream.collect(Collectors.toList());
+
+// 使用分页查询来获取 existingWordHeads
+int pageSize = 1000; // 每页大小
+int totalWords = englishWordList.size();
+Set<String> existingWordHeads = new HashSet<>();
+
+for (int offset = 0; offset < totalWords; offset += pageSize) {
+    int limit = Math.min(pageSize, totalWords - offset);
+    List<String> batchWordHeads = englishWordList.stream()
+            .skip(offset)
+            .limit(limit)
+            .map(EnglishWord::getWord_head)
+            .collect(Collectors.toList());
+
+    List<String> existingBatchWordHeads = getBaseMapper().selectObjs(
+            new QueryWrapper<EnglishWord>().select("word_head").in("word_head", batchWordHeads)
+    ).stream().map(Object::toString).collect(Collectors.toList());
+
+    existingWordHeads.addAll(existingBatchWordHeads);
+}
+
+List<EnglishWord> filteredEnglishWordList = englishWordList.stream()
+        .filter(englishWord -> !existingWordHeads.contains(englishWord.getWord_head()))
+        .collect(Collectors.toList());
+
+if (filteredEnglishWordList.isEmpty()) {
+    log.info("All words already exist in the database.");
+    return new int[] {0, existingWordHeads.size(), 0};
+}
+
+// 使用批量插入时检查是否已经存在
+List<EnglishWord> successfullyInsertedWords = new ArrayList<>();
+List<EnglishWord> failedInsertedWords = new ArrayList<>();
+
+for (EnglishWord englishWord : filteredEnglishWordList) {
+    try {
+        getBaseMapper().insert(englishWord);
+        successfullyInsertedWords.add(englishWord);
+    } catch (DuplicateKeyException e) {
+        failedInsertedWords.add(englishWord);
+    }
+}
+
+int successfulInserts = successfullyInsertedWords.size();
+int existingWords = existingWordHeads.size();
+int failedInserts = failedInsertedWords.size();
+
+log.info("Successfully inserted {} words.", successfulInserts);
+log.info("Failed to insert {} words.", failedInserts);
+
+return new int[] {successfulInserts, existingWords, failedInserts};
+
     }
 
 }

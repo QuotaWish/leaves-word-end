@@ -10,6 +10,7 @@ import com.quotawish.leaveword.constant.UserConstant;
 import com.quotawish.leaveword.exception.BusinessException;
 import com.quotawish.leaveword.exception.ThrowUtils;
 import com.quotawish.leaveword.model.dto.english.english_dictionary.EnglishDictionaryAddRequest;
+import com.quotawish.leaveword.model.dto.english.english_dictionary.EnglishDictionaryImportRequest;
 import com.quotawish.leaveword.model.dto.english.english_dictionary.EnglishDictionaryQueryRequest;
 import com.quotawish.leaveword.model.dto.english.english_dictionary.EnglishDictionaryUpdateRequest;
 import com.quotawish.leaveword.model.entity.User;
@@ -43,6 +44,20 @@ public class EnglishDictionaryController {
 
     @Resource
     private UserService userService;
+
+    /**
+     * 给某一个英语词典批量导入单词
+     * 导入的单词会自动关联到这个词典
+     *
+     * 返回：批量导入的单词数量，成功导入的单词列表
+     *
+     * 如果某个词典中已有单词会返回到 repeatWordList
+     * 如果某个单词不存在数据，会返回到 notExistWordList
+     */
+    @PostMapping("/import")
+    public BaseResponse<Boolean> importEnglishDictionary(@RequestBody @Validated @NotNull(message = "请求体不能为空") EnglishDictionaryImportRequest englishDictionaryAddRequest) {
+        return ResultUtils.success(false);
+    }
 
     /**
      * 创建英语词典

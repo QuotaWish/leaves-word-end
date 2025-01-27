@@ -9,6 +9,7 @@ import com.quotawish.leaveword.common.ResultUtils;
 import com.quotawish.leaveword.constant.UserConstant;
 import com.quotawish.leaveword.exception.BusinessException;
 import com.quotawish.leaveword.exception.ThrowUtils;
+import com.quotawish.leaveword.model.dto.english.english_word.EnglishWordAddBatchRequest;
 import com.quotawish.leaveword.model.dto.english.english_word.EnglishWordAddRequest;
 import com.quotawish.leaveword.model.dto.english.english_word.EnglishWordQueryRequest;
 import com.quotawish.leaveword.model.dto.english.english_word.EnglishWordUpdateRequest;
@@ -64,6 +65,16 @@ public class EnglishWordController {
 
         long newEnglishWordId = english_word.getId();
         return ResultUtils.success(newEnglishWordId);
+    }
+
+    /**
+     * 批量创建英语单词
+     */
+    @PostMapping("/add/batch")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<int[]> addEnglishWordBatch(@RequestBody @Validated EnglishWordAddBatchRequest batchReq, HttpServletRequest request) {
+
+        return ResultUtils.success(english_wordService.batchImportEnglishWord(batchReq));
     }
 
     /**

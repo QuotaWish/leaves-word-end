@@ -106,6 +106,16 @@ CREATE TABLE english_dictionary (
     is_delete TINYINT(1) DEFAULT 0
 ) COMMENT='英语词书';
 
+-- 单词和词典关系表
+CREATE TABLE dictionary_word (
+                                dictionary_id BIGINT NOT NULL,
+                                word_id BIGINT NOT NULL,
+                                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                PRIMARY KEY (dictionary_id, word_id),
+                                FOREIGN KEY (dictionary_id) REFERENCES english_dictionary(id) ON DELETE CASCADE,
+                                FOREIGN KEY (word_id) REFERENCES english_word(id) ON DELETE CASCADE
+) COMMENT='单词和词典关系表';
+
 CREATE TABLE audio_file (
                             id BIGINT AUTO_INCREMENT PRIMARY KEY,
                             path VARCHAR(255),
