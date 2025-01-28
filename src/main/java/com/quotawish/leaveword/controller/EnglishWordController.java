@@ -120,6 +120,8 @@ public class EnglishWordController {
         EnglishWord oldEnglishWord = english_wordService.getById(id);
         ThrowUtils.throwIf(oldEnglishWord == null, ErrorCode.NOT_FOUND_ERROR);
 
+        english_word.setStatus(WordStatus.PROCESSED.name());
+
         boolean result = english_wordService.updateById(english_word);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
 

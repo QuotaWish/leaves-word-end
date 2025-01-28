@@ -57,7 +57,8 @@ public class EnglishWordServiceImpl extends ServiceImpl<EnglishWordMapper, Engli
         Long id = english_wordQueryRequest.getId();
         Long notId = english_wordQueryRequest.getNotId();
         String title = english_wordQueryRequest.getTitle();
-        String content = english_wordQueryRequest.getContent();
+        String content = english_wordQueryRequest.getStatus();
+        String status = english_wordQueryRequest.getContent();
         String searchText = english_wordQueryRequest.getSearchText();
         String sortField = english_wordQueryRequest.getSortField();
         String sortOrder = english_wordQueryRequest.getSortOrder();
@@ -71,6 +72,7 @@ public class EnglishWordServiceImpl extends ServiceImpl<EnglishWordMapper, Engli
         // 模糊查询
         queryWrapper.like(StringUtils.isNotBlank(title), "title", title);
         queryWrapper.like(StringUtils.isNotBlank(content), "content", content);
+        queryWrapper.like(StringUtils.isNotBlank(status), "status", status);
 
         // 精确查询
         queryWrapper.ne(ObjectUtils.isNotEmpty(notId), "id", notId);
