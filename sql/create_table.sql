@@ -156,3 +156,26 @@ CREATE TABLE if not exists media_creator (
                                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                FOREIGN KEY (word_id) REFERENCES english_word(id)
 );
+
+CREATE TABLE category (
+                          id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT '分类ID',
+                          parent_id INT UNSIGNED DEFAULT 0 COMMENT '父分类ID',
+                          name VARCHAR(100) NOT NULL COMMENT '分类名称',
+                          sort_order INT DEFAULT 0 COMMENT '同级排序顺序',
+                          description VARCHAR(500) COMMENT '分类描述',
+                          is_root TINYINT(1) DEFAULT 0 COMMENT '是否为根分类',
+                          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                          INDEX idx_parent_id (parent_id),
+                          INDEX idx_sort_order (sort_order)
+) ENGINE=InnoDB COMMENT='分类表';
+
+CREATE TABLE dictionary_category (
+    id INT UNSIGNED AUTO_INCREMENT NOT NULL, -- 新增自增主键列
+    dictionary_id INT UNSIGNED NOT NULL,
+    category_id INT UNSIGNED NOT NULL,
+    sort_order INT DEFAULT 0 COMMENT '分类内排序',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id), -- 设置新的自增列为主键
+    INDEX idx_category_id (category_id)
+) ENGINE=InnoDB COMMENT='书籍分类关系表';

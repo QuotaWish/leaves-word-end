@@ -1,5 +1,6 @@
 package com.quotawish.leaveword.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.quotawish.leaveword.annotation.AuthCheck;
 import com.quotawish.leaveword.common.BaseResponse;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * 英语词典接口
@@ -202,5 +204,14 @@ public class EnglishDictionaryController {
                 englishDictionaryService.getQueryWrapper(englishDictionaryQueryRequest));
         // 获取封装类
         return ResultUtils.success(englishDictionaryService.getEnglishDictionaryVOPage(englishDictionaryPage, request));
+    }
+
+    /**
+     * 用户获取词典列表
+     */
+    @GetMapping("/list")
+    public BaseResponse<List<EnglishDictionary>> listEnglishDictionary() {
+        List<EnglishDictionary> englishDictionaryList = englishDictionaryService.list(new QueryWrapper<EnglishDictionary>());
+        return ResultUtils.success(englishDictionaryList);
     }
 }

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.quotawish.leaveword.mapper.DictionaryCategoryMapper">
+  <resultMap id="BaseResultMap" type="com.quotawish.leaveword.model.entity.DictionaryCategory">
+    <!--@mbg.generated-->
+    <!--@Table dictionary_category-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="dictionary_id" jdbcType="INTEGER" property="dictionaryId" />
+    <result column="category_id" jdbcType="INTEGER" property="categoryId" />
+    <result column="sort_order" jdbcType="INTEGER" property="sortOrder" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, dictionary_id, category_id, sort_order, created_at
+  </sql>
+  <update id="updateBatch" parameterType="java.util.List">
+    <!--@mbg.generated-->
+    update dictionary_category
+    <trim prefix="set" suffixOverrides=",">
+      <trim prefix="dictionary_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.dictionaryId,jdbcType=INTEGER}
+        </foreach>
+      </trim>
+      <trim prefix="category_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.categoryId,jdbcType=INTEGER}
+        </foreach>
+      </trim>
+      <trim prefix="sort_order = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.sortOrder,jdbcType=INTEGER}
+        </foreach>
+      </trim>
+      <trim prefix="created_at = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.createdAt,jdbcType=TIMESTAMP}
+        </foreach>
+      </trim>
+    </trim>
+    where id in
+    <foreach close=")" collection="list" item="item" open="(" separator=", ">
+      #{item.id,jdbcType=INTEGER}
+    </foreach>
+  </update>
+  <update id="updateBatchSelective" parameterType="java.util.List">
+    <!--@mbg.generated-->
+    update dictionary_category
+    <trim prefix="set" suffixOverrides=",">
+      <trim prefix="dictionary_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.dictionaryId != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.dictionaryId,jdbcType=INTEGER}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="category_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.categoryId != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.categoryId,jdbcType=INTEGER}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="sort_order = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.sortOrder != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.sortOrder,jdbcType=INTEGER}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="created_at = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.createdAt != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.createdAt,jdbcType=TIMESTAMP}
+          </if>
+        </foreach>
+      </trim>
+    </trim>
+    where id in
+    <foreach close=")" collection="list" item="item" open="(" separator=", ">
+      #{item.id,jdbcType=INTEGER}
+    </foreach>
+  </update>
+  <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into dictionary_category
+    (dictionary_id, category_id, sort_order, created_at)
+    values
+    <foreach collection="list" item="item" separator=",">
+      (#{item.dictionaryId,jdbcType=INTEGER}, #{item.categoryId,jdbcType=INTEGER}, #{item.sortOrder,jdbcType=INTEGER}, 
+        #{item.createdAt,jdbcType=TIMESTAMP})
+    </foreach>
+  </insert>
+  <delete id="deleteByPrimaryKeyIn">
+    <!--@mbg.generated-->
+    delete from dictionary_category where id in 
+    <foreach close=")" collection="list" item="id" open="(" separator=", ">
+      #{id,jdbcType=INTEGER}
+    </foreach>
+  </delete>
+  <insert id="insertOnDuplicateUpdate" keyColumn="id" keyProperty="id" parameterType="com.quotawish.leaveword.model.entity.DictionaryCategory" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into dictionary_category
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      dictionary_id,
+      category_id,
+      sort_order,
+      created_at,
+    </trim>
+    values
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      #{dictionaryId,jdbcType=INTEGER},
+      #{categoryId,jdbcType=INTEGER},
+      #{sortOrder,jdbcType=INTEGER},
+      #{createdAt,jdbcType=TIMESTAMP},
+    </trim>
+    on duplicate key update 
+    <trim suffixOverrides=",">
+      <if test="id != null">
+        id = #{id,jdbcType=INTEGER},
+      </if>
+      dictionary_id = #{dictionaryId,jdbcType=INTEGER},
+      category_id = #{categoryId,jdbcType=INTEGER},
+      sort_order = #{sortOrder,jdbcType=INTEGER},
+      created_at = #{createdAt,jdbcType=TIMESTAMP},
+    </trim>
+  </insert>
+  <insert id="insertOnDuplicateUpdateSelective" keyColumn="id" keyProperty="id" parameterType="com.quotawish.leaveword.model.entity.DictionaryCategory" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into dictionary_category
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="dictionaryId != null">
+        dictionary_id,
+      </if>
+      <if test="categoryId != null">
+        category_id,
+      </if>
+      <if test="sortOrder != null">
+        sort_order,
+      </if>
+      <if test="createdAt != null">
+        created_at,
+      </if>
+    </trim>
+    values
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="dictionaryId != null">
+        #{dictionaryId,jdbcType=INTEGER},
+      </if>
+      <if test="categoryId != null">
+        #{categoryId,jdbcType=INTEGER},
+      </if>
+      <if test="sortOrder != null">
+        #{sortOrder,jdbcType=INTEGER},
+      </if>
+      <if test="createdAt != null">
+        #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+    on duplicate key update 
+    <trim suffixOverrides=",">
+      <if test="id != null">
+        id = #{id,jdbcType=INTEGER},
+      </if>
+      <if test="dictionaryId != null">
+        dictionary_id = #{dictionaryId,jdbcType=INTEGER},
+      </if>
+      <if test="categoryId != null">
+        category_id = #{categoryId,jdbcType=INTEGER},
+      </if>
+      <if test="sortOrder != null">
+        sort_order = #{sortOrder,jdbcType=INTEGER},
+      </if>
+      <if test="createdAt != null">
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+</mapper>
