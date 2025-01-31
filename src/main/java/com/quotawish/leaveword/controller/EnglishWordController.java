@@ -9,10 +9,7 @@ import com.quotawish.leaveword.common.ResultUtils;
 import com.quotawish.leaveword.constant.UserConstant;
 import com.quotawish.leaveword.exception.BusinessException;
 import com.quotawish.leaveword.exception.ThrowUtils;
-import com.quotawish.leaveword.model.dto.english.english_word.EnglishWordAddBatchRequest;
-import com.quotawish.leaveword.model.dto.english.english_word.EnglishWordAddRequest;
-import com.quotawish.leaveword.model.dto.english.english_word.EnglishWordQueryRequest;
-import com.quotawish.leaveword.model.dto.english.english_word.EnglishWordUpdateRequest;
+import com.quotawish.leaveword.model.dto.english.english_word.*;
 import com.quotawish.leaveword.model.entity.User;
 import com.quotawish.leaveword.model.entity.english.word.EnglishWord;
 import com.quotawish.leaveword.model.enums.WordStatus;
@@ -75,6 +72,15 @@ public class EnglishWordController {
     public BaseResponse<int[]> addEnglishWordBatch(@RequestBody @Validated EnglishWordAddBatchRequest batchReq, HttpServletRequest request) {
 
         return ResultUtils.success(english_wordService.batchImportEnglishWord(batchReq));
+    }
+
+    /**
+     * 对某个英语单词评分 同时上传AI评分
+     */
+    @PostMapping("/score")
+    public BaseResponse<Boolean> scoreEnglishWord(@RequestBody @Validated EnglishWordScoreRequest request) {
+
+        return ResultUtils.success(english_wordService.scoreEnglishWord(request));
     }
 
     /**
@@ -155,7 +161,7 @@ public class EnglishWordController {
     public BaseResponse<Page<EnglishWord>> listEnglishWordByPage(@RequestBody EnglishWordQueryRequest english_wordQueryRequest) {
         long current = english_wordQueryRequest.getCurrent();
         long size = english_wordQueryRequest.getPageSize();
-        // 查询数据库
+
         Page<EnglishWord> english_wordPage = english_wordService.page(new Page<>(current, size),
                 english_wordService.getQueryWrapper(english_wordQueryRequest));
         return ResultUtils.success(english_wordPage);

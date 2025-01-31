@@ -11,7 +11,9 @@ import com.quotawish.leaveword.mapper.EnglishWordMapper;
 import com.quotawish.leaveword.model.dto.english.english_word.EnglishWordAddBatchRequest;
 import com.quotawish.leaveword.model.dto.english.english_word.EnglishWordAddRequest;
 import com.quotawish.leaveword.model.dto.english.english_word.EnglishWordQueryRequest;
+import com.quotawish.leaveword.model.dto.english.english_word.EnglishWordScoreRequest;
 import com.quotawish.leaveword.model.entity.english.word.EnglishWord;
+import com.quotawish.leaveword.model.entity.english.word.WordStatusChange;
 import com.quotawish.leaveword.model.enums.WordStatus;
 import com.quotawish.leaveword.model.vo.english.EnglishWordVO;
 import com.quotawish.leaveword.service.EnglishWordService;
@@ -41,6 +43,9 @@ public class EnglishWordServiceImpl extends ServiceImpl<EnglishWordMapper, Engli
     @Resource
     private UserService userService;
 
+    @Resource
+    private WordStatusChangeServiceImpl statusChangeService;
+
     /**
      * 获取查询条件
      *
@@ -56,9 +61,9 @@ public class EnglishWordServiceImpl extends ServiceImpl<EnglishWordMapper, Engli
         // todo 从对象中取值
         Long id = english_wordQueryRequest.getId();
         Long notId = english_wordQueryRequest.getNotId();
-        String title = english_wordQueryRequest.getTitle();
-        String content = english_wordQueryRequest.getStatus();
-        String status = english_wordQueryRequest.getContent();
+//        String title = english_wordQueryRequest.getTitle();
+//        String content = english_wordQueryRequest.getStatus();
+        String status = english_wordQueryRequest.getStatus();
         String searchText = english_wordQueryRequest.getSearchText();
         String sortField = english_wordQueryRequest.getSortField();
         String sortOrder = english_wordQueryRequest.getSortOrder();
@@ -70,14 +75,15 @@ public class EnglishWordServiceImpl extends ServiceImpl<EnglishWordMapper, Engli
             queryWrapper.and(qw -> qw.like("title", searchText).or().like("content", searchText));
         }
         // 模糊查询
-        queryWrapper.like(StringUtils.isNotBlank(title), "title", title);
-        queryWrapper.like(StringUtils.isNotBlank(content), "content", content);
-        queryWrapper.like(StringUtils.isNotBlank(status), "status", status);
+//        queryWrapper.like(StringUtils.isNotBlank(title), "title", title);
+//        queryWrapper.like(StringUtils.isNotBlank(content), "content", content);
 
         // 精确查询
         queryWrapper.ne(ObjectUtils.isNotEmpty(notId), "id", notId);
         queryWrapper.eq(ObjectUtils.isNotEmpty(id), "id", id);
         queryWrapper.eq(ObjectUtils.isNotEmpty(userId), "userId", userId);
+        queryWrapper.eq(StringUtils.isNotBlank(status), "status", status);
+
         // 排序规则
         queryWrapper.orderBy(SqlUtils.validSortField(sortField),
                 sortOrder.equals(CommonConstant.SORT_ORDER_ASC),
@@ -127,88 +133,113 @@ public class EnglishWordServiceImpl extends ServiceImpl<EnglishWordMapper, Engli
     public int[] batchImportEnglishWord(EnglishWordAddBatchRequest request) {
         Collection<EnglishWordAddRequest> words = request.getWords();
 
-Stream<EnglishWord> englishWordStream = words.stream().map(word -> {
-    EnglishWord english_word = new EnglishWord();
+        Stream<EnglishWord> englishWordStream = words.stream().map(word -> {
+            EnglishWord english_word = new EnglishWord();
 
-    english_word.setWord_head(word.getWord_head());
-    english_word.setInfo(word.getInfo());
+            english_word.setWord_head(word.getWord_head());
+            english_word.setInfo(word.getInfo());
 
-    if (english_word.getInfo() == null) {
-        english_word.setStatus(WordStatus.CREATED.name());
-        return english_word;
-    }
+            if (english_word.getInfo() == null) {
+                english_word.setStatus(WordStatus.CREATED.name());
+                return english_word;
+            }
 
-    // 进行初步校验english word 符合指定格式标记一下
-    try {
-        boolean standardFormat = EnglishWord.isStandardFormat(word.getInfo());
+            // 进行初步校验english word 符合指定格式标记一下
+            try {
+                boolean standardFormat = EnglishWord.isStandardFormat(word.getInfo());
 
-        if (standardFormat) {
-            english_word.setStatus(WordStatus.PROCESSED.name());
-        } else {
-            english_word.setStatus(WordStatus.DATA_FORMAT_ERROR.name());
-        }
+                if (standardFormat) {
+                    english_word.setStatus(WordStatus.PROCESSED.name());
+                } else {
+                    english_word.setStatus(WordStatus.DATA_FORMAT_ERROR.name());
+                }
 
-    } catch (Exception e) {
-        english_word.setStatus(WordStatus.UNKNOWN.name());
-    }
+            } catch (Exception e) {
+                english_word.setStatus(WordStatus.UNKNOWN.name());
+            }
 
-    return english_word;
-});
+            return english_word;
+        });
 
 // 把 englishWordStream 转成list
-List<EnglishWord> englishWordList = englishWordStream.collect(Collectors.toList());
+        List<EnglishWord> englishWordList = englishWordStream.collect(Collectors.toList());
 
 // 使用分页查询来获取 existingWordHeads
-int pageSize = 1000; // 每页大小
-int totalWords = englishWordList.size();
-Set<String> existingWordHeads = new HashSet<>();
+        int pageSize = 1000; // 每页大小
+        int totalWords = englishWordList.size();
+        Set<String> existingWordHeads = new HashSet<>();
 
-for (int offset = 0; offset < totalWords; offset += pageSize) {
-    int limit = Math.min(pageSize, totalWords - offset);
-    List<String> batchWordHeads = englishWordList.stream()
-            .skip(offset)
-            .limit(limit)
-            .map(EnglishWord::getWord_head)
-            .collect(Collectors.toList());
+        for (int offset = 0; offset < totalWords; offset += pageSize) {
+            int limit = Math.min(pageSize, totalWords - offset);
+            List<String> batchWordHeads = englishWordList.stream()
+                    .skip(offset)
+                    .limit(limit)
+                    .map(EnglishWord::getWord_head)
+                    .collect(Collectors.toList());
 
-    List<String> existingBatchWordHeads = getBaseMapper().selectObjs(
-            new QueryWrapper<EnglishWord>().select("word_head").in("word_head", batchWordHeads)
-    ).stream().map(Object::toString).collect(Collectors.toList());
+            List<String> existingBatchWordHeads = getBaseMapper().selectObjs(
+                    new QueryWrapper<EnglishWord>().select("word_head").in("word_head", batchWordHeads)
+            ).stream().map(Object::toString).collect(Collectors.toList());
 
-    existingWordHeads.addAll(existingBatchWordHeads);
-}
+            existingWordHeads.addAll(existingBatchWordHeads);
+        }
 
-List<EnglishWord> filteredEnglishWordList = englishWordList.stream()
-        .filter(englishWord -> !existingWordHeads.contains(englishWord.getWord_head()))
-        .collect(Collectors.toList());
+        List<EnglishWord> filteredEnglishWordList = englishWordList.stream()
+                .filter(englishWord -> !existingWordHeads.contains(englishWord.getWord_head()))
+                .collect(Collectors.toList());
 
-if (filteredEnglishWordList.isEmpty()) {
-    log.info("All words already exist in the database.");
-    return new int[] {0, existingWordHeads.size(), 0};
-}
+        if (filteredEnglishWordList.isEmpty()) {
+            log.info("All words already exist in the database.");
+            return new int[] {0, existingWordHeads.size(), 0};
+        }
 
 // 使用批量插入时检查是否已经存在
-List<EnglishWord> successfullyInsertedWords = new ArrayList<>();
-List<EnglishWord> failedInsertedWords = new ArrayList<>();
+        List<EnglishWord> successfullyInsertedWords = new ArrayList<>();
+        List<EnglishWord> failedInsertedWords = new ArrayList<>();
 
-for (EnglishWord englishWord : filteredEnglishWordList) {
-    try {
-        getBaseMapper().insert(englishWord);
-        successfullyInsertedWords.add(englishWord);
-    } catch (DuplicateKeyException e) {
-        failedInsertedWords.add(englishWord);
+        for (EnglishWord englishWord : filteredEnglishWordList) {
+            try {
+                getBaseMapper().insert(englishWord);
+                successfullyInsertedWords.add(englishWord);
+            } catch (DuplicateKeyException e) {
+                failedInsertedWords.add(englishWord);
+            }
+        }
+
+        int successfulInserts = successfullyInsertedWords.size();
+        int existingWords = existingWordHeads.size();
+        int failedInserts = failedInsertedWords.size();
+
+        log.info("Successfully inserted {} words.", successfulInserts);
+        log.info("Failed to insert {} words.", failedInserts);
+
+        return new int[] {successfulInserts, existingWords, failedInserts};
+
     }
-}
 
-int successfulInserts = successfullyInsertedWords.size();
-int existingWords = existingWordHeads.size();
-int failedInserts = failedInsertedWords.size();
+    @Override
+    public boolean scoreEnglishWord(EnglishWordScoreRequest request) {
+        EnglishWord byId = getById(request.getId());
+        ThrowUtils.throwIf(byId == null, ErrorCode.NOT_FOUND_ERROR);
 
-log.info("Successfully inserted {} words.", successfulInserts);
-log.info("Failed to insert {} words.", failedInserts);
+        Integer score = request.getScore();
+        Integer aiScore = request.getAiScore();
 
-return new int[] {successfulInserts, existingWords, failedInserts};
+        double totalScore = score * 0.4 + aiScore * 0.6;
+        boolean passValidate = totalScore > 85;
 
+        WordStatusChange wordStatusChange = new WordStatusChange();
+
+        wordStatusChange.setWord_id(request.getId());
+        wordStatusChange.setComment(passValidate ? "评分通过审核" : "评分未通过审核");
+        wordStatusChange.setInfo(request.getAiContent());
+
+        byId.setStatus(passValidate ? WordStatus.APPROVED.name() : WordStatus.REJECTED.name());
+
+        save(byId);
+        statusChangeService.save(wordStatusChange);
+
+        return passValidate;
     }
 
 }

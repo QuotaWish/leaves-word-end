@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.quotawish.leaveword.model.dto.english.english_word.EnglishWordAddBatchRequest;
 import com.quotawish.leaveword.model.dto.english.english_word.EnglishWordQueryRequest;
+import com.quotawish.leaveword.model.dto.english.english_word.EnglishWordScoreRequest;
 import com.quotawish.leaveword.model.entity.english.word.EnglishWord;
 import com.quotawish.leaveword.model.vo.english.EnglishWordVO;
 
@@ -52,4 +53,9 @@ public interface EnglishWordService extends IService<EnglishWord> {
      * 3.表示失败的数量（失败可能是数据库无法链接等异常问题）
      */
     int[] batchImportEnglishWord(EnglishWordAddBatchRequest request);
+
+    /**
+     * 对某个英语单词评分 同时上传AI评分
+     */
+    boolean scoreEnglishWord(EnglishWordScoreRequest request);
 }

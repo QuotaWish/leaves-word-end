@@ -76,12 +76,14 @@ public class MediaCreatorServiceImpl extends ServiceImpl<MediaCreatorMapper, Med
         Long id = media_creatorQueryRequest.getId();
         Long notId = media_creatorQueryRequest.getNotId();
         String mediaType = media_creatorQueryRequest.getMediaType();
+        String mediaUrl = media_creatorQueryRequest.getMediaUrl();
         String sortField = media_creatorQueryRequest.getSortField();
         String sortOrder = media_creatorQueryRequest.getSortOrder();
         Long userId = media_creatorQueryRequest.getUserId();
 
         // 模糊查询
-        queryWrapper.like(StringUtils.isNotBlank(mediaType), "mediaType", mediaType);
+        queryWrapper.like(StringUtils.isNotBlank(mediaType), "media_type", mediaType);
+        queryWrapper.like(StringUtils.isNotBlank(mediaType), "media_url", mediaUrl);
 
         // 精确查询
         queryWrapper.ne(ObjectUtils.isNotEmpty(notId), "id", notId);

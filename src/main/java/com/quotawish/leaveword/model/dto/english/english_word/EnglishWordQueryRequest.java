@@ -32,16 +32,6 @@ public class EnglishWordQueryRequest extends PageRequest implements Serializable
     private String searchText;
 
     /**
-     * 标题
-     */
-    private String title;
-
-    /**
-     * 内容
-     */
-    private String content;
-
-    /**
      * 当前状态
      */
     private String status;

@@ -1,10 +1,10 @@
 # 数据库初始化
 
 -- 创建库
-create database if not exists my_db;
+create database if not exists leaves_word;
 
 -- 切换库
-use my_db;
+use leaves_word;
 
 -- 用户表
 create table if not exists user
@@ -65,7 +65,7 @@ create table if not exists post_favour
 ) comment '帖子收藏';
 
 -- 单词表
-CREATE TABLE english_word (
+CREATE TABLE if not exists english_word (
     id BIGINT PRIMARY KEY COMMENT 'id',
     word_head VARCHAR(255),
     thumbnail VARCHAR(255),
@@ -80,7 +80,7 @@ ALTER TABLE english_word
 
 
 -- 单词变更记录表
-CREATE TABLE english_word_change_log (
+CREATE TABLE if not exists english_word_change_log (
     id BIGINT PRIMARY KEY COMMENT 'id',
     english_word_id BIGINT NOT NULL COMMENT '单词ID',
     field_name VARCHAR(255) NOT NULL COMMENT '变更字段名',
@@ -92,7 +92,7 @@ CREATE TABLE english_word_change_log (
 ) COMMENT='单词变更记录表';
 
 -- 英语词书
-CREATE TABLE english_dictionary (
+CREATE TABLE if not exists english_dictionary (
     id BIGINT PRIMARY KEY COMMENT 'id',
     name VARCHAR(255),
     description TEXT,
@@ -107,7 +107,7 @@ CREATE TABLE english_dictionary (
 ) COMMENT='英语词书';
 
 -- 单词和词典关系表
-CREATE TABLE dictionary_word (
+CREATE TABLE if not exists dictionary_word (
                                 dictionary_id BIGINT NOT NULL,
                                 word_id BIGINT NOT NULL,
                                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -116,7 +116,7 @@ CREATE TABLE dictionary_word (
                                 FOREIGN KEY (word_id) REFERENCES english_word(id) ON DELETE CASCADE
 ) COMMENT='单词和词典关系表';
 
-CREATE TABLE audio_file (
+CREATE TABLE if not exists audio_file (
                             id BIGINT AUTO_INCREMENT PRIMARY KEY,
                             path VARCHAR(255),
                             content MEDIUMTEXT,
@@ -134,7 +134,7 @@ ALTER TABLE audio_file
     ADD COLUMN name VARCHAR(255) NOT NULL DEFAULT '默认音频文件';
 
 
-CREATE TABLE word_status_change (
+CREATE TABLE if not exists word_status_change (
                                     id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT 'id',
                                     word_id BIGINT NOT NULL COMMENT '单词ID',
                                     status VARCHAR(255) NOT NULL COMMENT '变更状态',
@@ -146,7 +146,7 @@ CREATE TABLE word_status_change (
 ) COMMENT='单词状态变更记录表';
 
 
-CREATE TABLE media_creator (
+CREATE TABLE if not exists media_creator (
                                id BIGINT AUTO_INCREMENT PRIMARY KEY,
                                word_id BIGINT NOT NULL,
                                media_type VARCHAR(50) NOT NULL,

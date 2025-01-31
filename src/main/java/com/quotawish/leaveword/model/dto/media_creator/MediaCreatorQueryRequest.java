@@ -35,5 +35,10 @@ public class MediaCreatorQueryRequest extends PageRequest implements Serializabl
      */
     private String mediaType;
 
+    /**
+     * 媒体地址
+     */
+    private String mediaUrl;
+
     private static final long serialVersionUID = 1L;
 }
