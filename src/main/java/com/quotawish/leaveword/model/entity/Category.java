@@ -8,6 +8,8 @@ import java.util.Date;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import com.quotawish.leaveword.model.dto.core.ReqUpdateGroup;
 import lombok.Data;
 
 /**
@@ -20,7 +22,7 @@ public class Category {
      * 分类ID
      */
     @TableId(value = "id", type = IdType.ASSIGN_ID)
-    @NotNull(message = "分类ID不能为null")
+    @NotNull(message = "分类ID不能为null", groups = {ReqUpdateGroup.class})
     private Integer id;
 
     /**

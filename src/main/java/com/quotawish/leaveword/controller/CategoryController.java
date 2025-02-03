@@ -53,10 +53,9 @@ public class CategoryController {
     }
 
     /**
-     * 创建英语词典
+     * 创建分类
      *
      * @param category
-     * @param request
      * @return
      */
     @PostMapping("/add")
@@ -76,7 +75,7 @@ public class CategoryController {
      */
     @PostMapping("/delete")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<Boolean> deleteEnglishDictionary(@RequestBody @Validated @NotNull(message = "请求体不能为空") DeleteRequest deleteRequest) {
+    public BaseResponse<Boolean> deleteCategory(@RequestBody @Validated @NotNull(message = "请求体不能为空") DeleteRequest deleteRequest) {
         long id = deleteRequest.getId();
 
         Category oldCategory = categoryService.getById(id);
@@ -95,13 +94,13 @@ public class CategoryController {
      */
     @PostMapping("/update")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<Boolean> updateEnglishDictionary(@RequestBody @Validated(ReqUpdateGroup.class) Category paramCategory) {
+    public BaseResponse<Boolean> updateCategory(@RequestBody @Validated(ReqUpdateGroup.class) Category paramCategory) {
         Category category = categoryService.getById(paramCategory.getId());
 
         ThrowUtils.throwIf(category == null, ErrorCode.NOT_FOUND_ERROR);
 
         // 操作数据库
-        boolean result = categoryService.updateById(category);
+        boolean result = categoryService.updateById(paramCategory);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
 
         return ResultUtils.success(true);
@@ -115,7 +114,7 @@ public class CategoryController {
      */
     @PostMapping("/list/page")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<Page<Category>> listEnglishDictionaryByPage(@RequestBody CategoryQueryRequest categoryQueryRequest) {
+    public BaseResponse<Page<Category>> listCategoryByPage(@RequestBody CategoryQueryRequest categoryQueryRequest) {
         long current = categoryQueryRequest.getCurrent();
         long size = categoryQueryRequest.getPageSize();
         // 查询数据库
