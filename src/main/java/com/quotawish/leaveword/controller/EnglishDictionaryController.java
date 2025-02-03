@@ -1,5 +1,6 @@
 package com.quotawish.leaveword.controller;
 
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.quotawish.leaveword.annotation.AuthCheck;
@@ -14,10 +15,13 @@ import com.quotawish.leaveword.model.dto.english.english_dictionary.EnglishDicti
 import com.quotawish.leaveword.model.dto.english.english_dictionary.EnglishDictionaryImportRequest;
 import com.quotawish.leaveword.model.dto.english.english_dictionary.EnglishDictionaryQueryRequest;
 import com.quotawish.leaveword.model.dto.english.english_dictionary.EnglishDictionaryUpdateRequest;
+import com.quotawish.leaveword.model.entity.Category;
 import com.quotawish.leaveword.model.entity.User;
 import com.quotawish.leaveword.model.entity.english.EnglishDictionary;
 import com.quotawish.leaveword.model.entity.english.word.EnglishWord;
 import com.quotawish.leaveword.model.vo.english.EnglishDictionaryVO;
+import com.quotawish.leaveword.model.vo.english.EnglishDictionaryWithCategoryVO;
+import com.quotawish.leaveword.service.DictionaryCategoryService;
 import com.quotawish.leaveword.service.EnglishDictionaryService;
 import com.quotawish.leaveword.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +33,12 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 英语词典接口
@@ -46,6 +55,9 @@ public class EnglishDictionaryController {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private DictionaryCategoryService dictionaryCategoryService;
 
     /**
      * 给某一个英语词典批量导入单词
@@ -210,8 +222,14 @@ public class EnglishDictionaryController {
      * 用户获取词典列表
      */
     @GetMapping("/list")
-    public BaseResponse<List<EnglishDictionary>> listEnglishDictionary() {
-        List<EnglishDictionary> englishDictionaryList = englishDictionaryService.list(new QueryWrapper<EnglishDictionary>());
-        return ResultUtils.success(englishDictionaryList);
+    public BaseResponse<List<EnglishDictionaryWithCategoryVO>> listEnglishDictionary() {
+        List<EnglishDictionary> englishDictionaryList = englishDictionaryService.list(new QueryWrapper<>());
+        List<EnglishDictionaryWithCategoryVO> englishDictionaryWithCategoryVOList = englishDictionaryList.stream().map(englishDictionary -> {
+            Collection<Category> dictionaryCategoryByDictionaryId = dictionaryCategoryService.getDictionaryCategoryByDictionaryId(englishDictionary.getId());
+
+            return EnglishDictionaryWithCategoryVO.objToVo(englishDictionary, new ArrayList<>(dictionaryCategoryByDictionaryId));
+        }).collect(Collectors.toList());
+
+        return ResultUtils.success(englishDictionaryWithCategoryVOList);
     }
 }
