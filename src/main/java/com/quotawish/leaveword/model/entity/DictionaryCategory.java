@@ -20,7 +20,7 @@ public class DictionaryCategory {
 
     @TableField(value = "dictionary_id")
     @NotNull(message = "不能为null")
-    private Integer dictionaryId;
+    private Long dictionaryId;
 
     @TableField(value = "category_id")
     @NotNull(message = "不能为null")

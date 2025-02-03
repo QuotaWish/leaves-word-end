@@ -172,7 +172,7 @@ CREATE TABLE category (
 
 CREATE TABLE dictionary_category (
     id INT UNSIGNED AUTO_INCREMENT NOT NULL, -- 新增自增主键列
-    dictionary_id INT UNSIGNED NOT NULL,
+    dictionary_id bigint UNSIGNED NOT NULL,
     category_id INT UNSIGNED NOT NULL,
     sort_order INT DEFAULT 0 COMMENT '分类内排序',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
