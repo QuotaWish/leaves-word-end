@@ -138,7 +138,7 @@ CREATE TABLE if not exists word_status_change (
                                     id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT 'id',
                                     word_id BIGINT NOT NULL COMMENT '单词ID',
                                     status VARCHAR(255) NOT NULL COMMENT '变更状态',
-                                    info VARCHAR(255) COMMENT '变更信息',
+                                    info JSON COMMENT '变更信息',
                                     comment VARCHAR(255) COMMENT '评论',
                                     create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                                     update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',

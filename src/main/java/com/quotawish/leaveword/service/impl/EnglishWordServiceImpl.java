@@ -235,8 +235,9 @@ public class EnglishWordServiceImpl extends ServiceImpl<EnglishWordMapper, Engli
         wordStatusChange.setInfo(request.getAiContent());
 
         byId.setStatus(passValidate ? WordStatus.APPROVED.name() : WordStatus.REJECTED.name());
+        wordStatusChange.setStatus(byId.getStatus());
 
-        save(byId);
+        updateById(byId);
         statusChangeService.save(wordStatusChange);
 
         return passValidate;
