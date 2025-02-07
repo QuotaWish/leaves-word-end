@@ -1,19 +1,22 @@
 package com.quotawish.leaveword.mapper;
 
-
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+import java.util.List;
+
 import com.quotawish.leaveword.model.entity.english.word.WordStatusChange;
+import org.apache.ibatis.annotations.Param;
 
-/**
-* @author TalexDS
-* @description 针对表【word_status_change(单词状态变更记录表)】的数据库操作Mapper
-* @createDate 2025-01-24 12:47:41
-* @Entity generator.domain.WordStatusChange
-*/
 public interface WordStatusChangeMapper extends BaseMapper<WordStatusChange> {
+    int updateBatch(@Param("list") List<WordStatusChange> list);
 
+    int updateBatchSelective(@Param("list") List<WordStatusChange> list);
+
+    int batchInsert(@Param("list") List<WordStatusChange> list);
+
+    int deleteByPrimaryKeyIn(List<Long> list);
+
+    int insertOnDuplicateUpdate(WordStatusChange record);
+
+    int insertOnDuplicateUpdateSelective(WordStatusChange record);
 }
-
-
-
-

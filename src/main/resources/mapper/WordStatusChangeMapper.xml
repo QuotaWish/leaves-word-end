@@ -1,22 +1,284 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.quotawish.leaveword.mapper.WordStatusChangeMapper">
+  <resultMap id="BaseResultMap" type="com.quotawish.leaveword.model.entity.english.word.WordStatusChange">
+    <!--@mbg.generated-->
+    <!--@Table word_status_change-->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="word_id" jdbcType="BIGINT" property="wordId" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="info" jdbcType="VARCHAR" property="info" />
+    <result column="comment" jdbcType="VARCHAR" property="comment" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, word_id, `status`, info, `comment`, create_time, update_time, is_delete
+  </sql>
+  <update id="updateBatch" parameterType="java.util.List">
+    <!--@mbg.generated-->
+    update word_status_change
+    <trim prefix="set" suffixOverrides=",">
+      <trim prefix="word_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.wordId,jdbcType=BIGINT}
+        </foreach>
+      </trim>
+      <trim prefix="`status` = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.status,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="info = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.info,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="`comment` = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.comment,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="create_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.createTime,jdbcType=TIMESTAMP}
+        </foreach>
+      </trim>
+      <trim prefix="update_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.updateTime,jdbcType=TIMESTAMP}
+        </foreach>
+      </trim>
+      <trim prefix="is_delete = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.isDelete,jdbcType=INTEGER}
+        </foreach>
+      </trim>
+    </trim>
+    where id in
+    <foreach close=")" collection="list" item="item" open="(" separator=", ">
+      #{item.id,jdbcType=BIGINT}
+    </foreach>
+  </update>
+  <update id="updateBatchSelective" parameterType="java.util.List">
+    <!--@mbg.generated-->
+    update word_status_change
+    <trim prefix="set" suffixOverrides=",">
+      <trim prefix="word_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.wordId != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.wordId,jdbcType=BIGINT}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="`status` = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.status != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.status,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="info = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.info != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.info,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="`comment` = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.comment != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.comment,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="create_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.createTime != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.createTime,jdbcType=TIMESTAMP}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="update_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.updateTime != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.updateTime,jdbcType=TIMESTAMP}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="is_delete = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.isDelete != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.isDelete,jdbcType=INTEGER}
+          </if>
+        </foreach>
+      </trim>
+    </trim>
+    where id in
+    <foreach close=")" collection="list" item="item" open="(" separator=", ">
+      #{item.id,jdbcType=BIGINT}
+    </foreach>
+  </update>
+  <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into word_status_change
+    (word_id, `status`, info, `comment`, create_time, update_time, is_delete)
+    values
+    <foreach collection="list" item="item" separator=",">
+      (#{item.wordId,jdbcType=BIGINT}, #{item.status,jdbcType=VARCHAR}, #{item.info,jdbcType=VARCHAR}, 
+        #{item.comment,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}, 
+        #{item.isDelete,jdbcType=INTEGER})
+    </foreach>
+  </insert>
+  <delete id="deleteByPrimaryKeyIn">
+    <!--@mbg.generated-->
+    delete from word_status_change where id in 
+    <foreach close=")" collection="list" item="id" open="(" separator=", ">
+      #{id,jdbcType=BIGINT}
+    </foreach>
+  </delete>
+  <insert id="insertOnDuplicateUpdate" keyColumn="id" keyProperty="id" parameterType="com.quotawish.leaveword.model.entity.WordStatusChange" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into word_status_change
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      word_id,
+      `status`,
+      info,
+      `comment`,
+      create_time,
+      update_time,
+      is_delete,
+    </trim>
+    values
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      #{wordId,jdbcType=BIGINT},
+      #{status,jdbcType=VARCHAR},
+      #{info,jdbcType=VARCHAR},
+      #{comment,jdbcType=VARCHAR},
+      #{createTime,jdbcType=TIMESTAMP},
+      #{updateTime,jdbcType=TIMESTAMP},
+      #{isDelete,jdbcType=INTEGER},
+    </trim>
+    on duplicate key update 
+    <trim suffixOverrides=",">
+      <if test="id != null">
+        id = #{id,jdbcType=BIGINT},
+      </if>
+      word_id = #{wordId,jdbcType=BIGINT},
+      `status` = #{status,jdbcType=VARCHAR},
+      info = #{info,jdbcType=VARCHAR},
+      `comment` = #{comment,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      is_delete = #{isDelete,jdbcType=INTEGER},
+    </trim>
+  </insert>
+  <insert id="insertOnDuplicateUpdateSelective" keyColumn="id" keyProperty="id" parameterType="com.quotawish.leaveword.model.entity.WordStatusChange" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into word_status_change
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="wordId != null">
+        word_id,
+      </if>
+      <if test="status != null">
+        `status`,
+      </if>
+      <if test="info != null">
+        info,
+      </if>
+      <if test="comment != null">
+        `comment`,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="isDelete != null">
+        is_delete,
+      </if>
+    </trim>
+    values
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="wordId != null">
+        #{wordId,jdbcType=BIGINT},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="info != null">
+        #{info,jdbcType=VARCHAR},
+      </if>
+      <if test="comment != null">
+        #{comment,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDelete != null">
+        #{isDelete,jdbcType=INTEGER},
+      </if>
+    </trim>
+    on duplicate key update 
+    <trim suffixOverrides=",">
+      <if test="id != null">
+        id = #{id,jdbcType=BIGINT},
+      </if>
+      <if test="wordId != null">
+        word_id = #{wordId,jdbcType=BIGINT},
+      </if>
+      <if test="status != null">
+        `status` = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="info != null">
+        info = #{info,jdbcType=VARCHAR},
+      </if>
+      <if test="comment != null">
+        `comment` = #{comment,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDelete != null">
+        is_delete = #{isDelete,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
 
-    <resultMap id="BaseResultMap" type="com.quotawish.leaveword.model.entity.english.word.WordStatusChange">
-            <id property="id" column="id" />
-            <result property="word_id" column="word_id" />
-            <result property="status" column="status" />
-            <result property="info" column="info" />
-            <result property="comment" column="comment" />
-            <result property="create_time" column="create_time" />
-            <result property="update_time" column="update_time" />
-            <result property="is_delete" column="is_delete" />
-    </resultMap>
+<!--    <resultMap id="BaseResultMap" type="com.quotawish.leaveword.model.entity.english.word.WordStatusChange">-->
+<!--            <id column="id" property="id" />-->
+<!--            <result column="word_id" property="word_id" />-->
+<!--            <result column="status" property="status" />-->
+<!--            <result column="info" property="info" />-->
+<!--            <result column="comment" property="comment" />-->
+<!--            <result column="create_time" property="create_time" />-->
+<!--            <result column="update_time" property="update_time" />-->
+<!--            <result column="is_delete" property="is_delete" />-->
+<!--    </resultMap>-->
 
-    <sql id="Base_Column_List">
-        id,word_id,status,info,comment,create_time,
-        update_time,is_delete
-    </sql>
+<!--    <sql id="Base_Column_List">-->
+<!--        id,word_id,status,info,comment,create_time,-->
+<!--        update_time,is_delete-->
+<!--    </sql>-->
 </mapper>

@@ -101,7 +101,7 @@ public class AutoWordSchedule {
 
                             WordStatusChange change = new WordStatusChange();
 
-                            change.setWord_id(word.getId());
+                            change.setWordId(word.getId());
                             change.setInfo(jsonObject.toString());
                             change.setComment("AI_AUTO_SUPPLEMENT");
 
@@ -131,8 +131,6 @@ public class AutoWordSchedule {
                         log.info("处理完成 | Using token: {}", event.getChat().getUsage().getTokenCount());
                     }
                 });
-
-        cozeApi.shutdownExecutor();
     }
 
 }

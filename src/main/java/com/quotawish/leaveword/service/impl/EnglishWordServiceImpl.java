@@ -230,7 +230,7 @@ public class EnglishWordServiceImpl extends ServiceImpl<EnglishWordMapper, Engli
 
         WordStatusChange wordStatusChange = new WordStatusChange();
 
-        wordStatusChange.setWord_id(request.getId());
+        wordStatusChange.setWordId(request.getId());
         wordStatusChange.setComment(passValidate ? "评分通过审核" : "评分未通过审核");
         wordStatusChange.setInfo(request.getAiContent());
 
