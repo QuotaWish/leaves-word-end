@@ -16,8 +16,8 @@ public class CozeConfig {
     @Value("${coze.workflow}")
     private String workflowId;
 
-    @Value("${coze.addon}")
-    private Map<String, String> addon;
+//    @Value("${coze.addon}")
+//    private Map<String, String> addon;
 
 
     @Value("${coze.addon.supply}")
