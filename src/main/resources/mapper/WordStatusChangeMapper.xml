@@ -15,7 +15,7 @@
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, word_id, `status`, info, `comment`, create_time, update_time, is_delete
+    id word_id, `status`, info, `comment`, create_time, update_time, is_delete
   </sql>
   <update id="updateBatch" parameterType="java.util.List">
     <!--@mbg.generated-->
@@ -139,7 +139,7 @@
       #{id,jdbcType=BIGINT}
     </foreach>
   </delete>
-  <insert id="insertOnDuplicateUpdate" keyColumn="id" keyProperty="id" parameterType="com.quotawish.leaveword.model.entity.WordStatusChange" useGeneratedKeys="true">
+  <insert id="insertOnDuplicateUpdate" keyColumn="id" keyProperty="id" parameterType="com.quotawish.leaveword.model.entity.english.word.WordStatusChange" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into word_status_change
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -181,7 +181,7 @@
       is_delete = #{isDelete,jdbcType=INTEGER},
     </trim>
   </insert>
-  <insert id="insertOnDuplicateUpdateSelective" keyColumn="id" keyProperty="id" parameterType="com.quotawish.leaveword.model.entity.WordStatusChange" useGeneratedKeys="true">
+  <insert id="insertOnDuplicateUpdateSelective" keyColumn="id" keyProperty="id" parameterType="com.quotawish.leaveword.model.entity.english.word.WordStatusChange" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into word_status_change
     <trim prefix="(" suffix=")" suffixOverrides=",">
