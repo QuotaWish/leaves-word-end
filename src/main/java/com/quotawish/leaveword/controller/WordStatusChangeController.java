@@ -8,10 +8,18 @@ import com.quotawish.leaveword.model.dto.audio.AudioFileQueryRequest;
 import com.quotawish.leaveword.model.dto.english.status_change.EnglishWordStatusChangeQueryRequest;
 import com.quotawish.leaveword.model.entity.audio.AudioFile;
 import com.quotawish.leaveword.model.entity.english.word.WordStatusChange;
+import com.quotawish.leaveword.model.enums.WordStatus;
+import com.quotawish.leaveword.model.vo.english.WordStatusChangeVO;
 import com.quotawish.leaveword.service.impl.WordStatusChangeServiceImpl;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
 * 单词状态变更记录表(word_status_change)表控制层
@@ -55,14 +63,28 @@ public class WordStatusChangeController {
      */
     @PostMapping("/list/page")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<Page<WordStatusChange>> listStatusChangeByPage(@RequestBody EnglishWordStatusChangeQueryRequest request) {
+    public BaseResponse<Page<WordStatusChangeVO>> listStatusChangeByPage(@RequestBody EnglishWordStatusChangeQueryRequest request) {
         long current = request.getCurrent();
         long size = request.getPageSize();
         // 查询数据库
-        Page<WordStatusChange> audio_filePage = wordStatusChangeServiceImpl.page(new Page<>(current, size),
+        Page<WordStatusChange> page = wordStatusChangeServiceImpl.page(new Page<>(current, size),
                 wordStatusChangeServiceImpl.getQueryWrapper(request));
 
-        return ResultUtils.success(audio_filePage);
+        // 将每一个record都转成VO
+        Page<WordStatusChangeVO> finalPage = new Page<>(current, size, page.getTotal());
+
+        List<WordStatusChangeVO> voList = page.getRecords().stream()
+                .map(wordStatusChange -> {
+                    WordStatusChangeVO wordStatusChangeVO = new WordStatusChangeVO();
+                    BeanUtils.copyProperties(wordStatusChange, wordStatusChangeVO);
+                    wordStatusChangeVO.setStatus(WordStatus.valueOf(wordStatusChange.getStatus()));
+                    return wordStatusChangeVO;
+                })
+                .collect(Collectors.toList());
+
+        finalPage.setRecords(voList);
+
+        return ResultUtils.success(finalPage);
     }
 
 }

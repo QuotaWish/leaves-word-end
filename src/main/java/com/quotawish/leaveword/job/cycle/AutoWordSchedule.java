@@ -84,6 +84,11 @@ public class AutoWordSchedule {
 
         timer.start(timerKey);
 
+        WordStatusChange change = new WordStatusChange();
+        JSONObject jsonObject = new JSONObject();
+
+        jsonObject.set("before", currentInfo);
+
         Flowable<ChatEvent> resp = cozeApi.chat().stream(req);
         resp.blockingForEach(
                 event -> {
@@ -93,13 +98,11 @@ public class AutoWordSchedule {
                             long interval = intervalMs / 1000 / 60;
                             String totalInfo = event.getMessage().getContent();
 
-                            JSONObject jsonObject = new JSONObject();
 
-                            jsonObject.set("before", currentInfo);
                             jsonObject.set("after", totalInfo);
                             jsonObject.set("interval", intervalMs);
 
-                            WordStatusChange change = new WordStatusChange();
+
 
                             change.setWordId(word.getId());
                             change.setInfo(jsonObject.toString());
@@ -129,6 +132,11 @@ public class AutoWordSchedule {
                     }
                     if (ChatEventType.CONVERSATION_CHAT_COMPLETED.equals(event.getEvent())) {
                         log.info("处理完成 | Using token: {}", event.getChat().getUsage().getTokenCount());
+
+                        jsonObject.set("tokens", event.getChat().getUsage().getTokenCount());
+                        change.setInfo(jsonObject.toString());
+
+                        wordStatusChangeService.save(change);
                     }
                 });
     }
