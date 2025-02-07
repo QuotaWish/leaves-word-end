@@ -46,6 +46,11 @@
             <artifactId>mybatis-plus-boot-starter</artifactId>
             <version>3.5.2</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.yulichang</groupId>
+            <artifactId>mybatis-plus-join</artifactId>
+            <version>1.2.4</version>
+        </dependency>
         <!-- redis -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

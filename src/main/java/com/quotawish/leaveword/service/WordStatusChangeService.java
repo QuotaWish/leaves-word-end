@@ -2,11 +2,13 @@ package com.quotawish.leaveword.service;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.quotawish.leaveword.model.dto.audio.AudioFileQueryRequest;
 import com.quotawish.leaveword.model.dto.english.status_change.EnglishWordStatusChangeQueryRequest;
 import com.quotawish.leaveword.model.entity.audio.AudioFile;
 import com.quotawish.leaveword.model.entity.english.word.WordStatusChange;
+import com.quotawish.leaveword.model.vo.english.WordStatusChangeVO;
 
 import java.util.List;
 
@@ -34,6 +36,6 @@ public interface WordStatusChangeService extends IService<WordStatusChange> {
      */
     List<WordStatusChange> selectListByWordId(Long wordId, Long lastId);
 
-    QueryWrapper<WordStatusChange> getQueryWrapper(EnglishWordStatusChangeQueryRequest englishWordStatusChangeQueryRequest);
+    Page<WordStatusChangeVO> getQueryWrapper(EnglishWordStatusChangeQueryRequest englishWordStatusChangeQueryRequest);
 }
 

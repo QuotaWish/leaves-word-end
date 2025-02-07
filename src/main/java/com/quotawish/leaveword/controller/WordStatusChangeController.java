@@ -64,27 +64,8 @@ public class WordStatusChangeController {
     @PostMapping("/list/page")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Page<WordStatusChangeVO>> listStatusChangeByPage(@RequestBody EnglishWordStatusChangeQueryRequest request) {
-        long current = request.getCurrent();
-        long size = request.getPageSize();
-        // 查询数据库
-        Page<WordStatusChange> page = wordStatusChangeServiceImpl.page(new Page<>(current, size),
-                wordStatusChangeServiceImpl.getQueryWrapper(request));
 
-        // 将每一个record都转成VO
-        Page<WordStatusChangeVO> finalPage = new Page<>(current, size, page.getTotal());
-
-        List<WordStatusChangeVO> voList = page.getRecords().stream()
-                .map(wordStatusChange -> {
-                    WordStatusChangeVO wordStatusChangeVO = new WordStatusChangeVO();
-                    BeanUtils.copyProperties(wordStatusChange, wordStatusChangeVO);
-                    wordStatusChangeVO.setStatus(WordStatus.valueOf(wordStatusChange.getStatus()));
-                    return wordStatusChangeVO;
-                })
-                .collect(Collectors.toList());
-
-        finalPage.setRecords(voList);
-
-        return ResultUtils.success(finalPage);
+        return ResultUtils.success(wordStatusChangeServiceImpl.getQueryWrapper(request));
     }
 
 }

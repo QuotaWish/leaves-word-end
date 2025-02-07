@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.Collections;
+import java.util.Date;
 
 /**
  * 本类主要功能如下：
@@ -88,6 +89,7 @@ public class AutoWordSchedule {
         JSONObject jsonObject = new JSONObject();
 
         jsonObject.set("before", currentInfo);
+        jsonObject.set("beforeStatus", change.getStatus());
 
         Flowable<ChatEvent> resp = cozeApi.chat().stream(req);
         resp.blockingForEach(
@@ -101,8 +103,6 @@ public class AutoWordSchedule {
 
                             jsonObject.set("after", totalInfo);
                             jsonObject.set("interval", intervalMs);
-
-
 
                             change.setWordId(word.getId());
                             change.setInfo(jsonObject.toString());
@@ -124,6 +124,11 @@ public class AutoWordSchedule {
                                 }
 
                                 change.setStatus(word.getStatus());
+                                jsonObject.set("afterStatus", change.getStatus());
+                                change.setInfo(jsonObject.toString());
+
+                                change.setUpdateTime(new Date());
+
                                 wordStatusChangeService.save(change);
                                 englishWordService.updateById(word);
                             }
