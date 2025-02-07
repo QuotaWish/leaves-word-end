@@ -243,4 +243,11 @@ public class EnglishWordServiceImpl extends ServiceImpl<EnglishWordMapper, Engli
         return passValidate;
     }
 
+    @Override
+    public WordStatusChange getEnglishWordAutoScore(Long id) {
+        WordStatusChange change = statusChangeService.getOne(new QueryWrapper<WordStatusChange>().eq("word_id", id).eq("COMMENT", "AI_AUTO_RATE").last("LIMIT 1"));
+
+        return change;
+    }
+
 }

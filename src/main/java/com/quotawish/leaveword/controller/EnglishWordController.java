@@ -1,5 +1,6 @@
 package com.quotawish.leaveword.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.quotawish.leaveword.annotation.AuthCheck;
 import com.quotawish.leaveword.common.BaseResponse;
@@ -12,6 +13,7 @@ import com.quotawish.leaveword.exception.ThrowUtils;
 import com.quotawish.leaveword.model.dto.english.english_word.*;
 import com.quotawish.leaveword.model.entity.User;
 import com.quotawish.leaveword.model.entity.english.word.EnglishWord;
+import com.quotawish.leaveword.model.entity.english.word.WordStatusChange;
 import com.quotawish.leaveword.model.enums.WordStatus;
 import com.quotawish.leaveword.model.vo.english.EnglishWordVO;
 import com.quotawish.leaveword.service.EnglishWordService;
@@ -217,5 +219,16 @@ public class EnglishWordController {
         // 获取封装类
         return ResultUtils.success(english_wordService.getEnglishWordVOPage(english_wordPage, request));
     }
-    // endregion
+
+    /**
+     * 获取某个单词的自动AI评分 （每次处理完成后都会自动刷新一个评分）
+     */
+    @GetMapping("/score")
+    public BaseResponse<WordStatusChange> getScoreEnglishWord(@RequestParam("id") Long id) {
+        // 获取单词
+        EnglishWord english_word = english_wordService.getById(id);
+        ThrowUtils.throwIf(english_word == null, ErrorCode.NOT_FOUND_ERROR);
+
+        return ResultUtils.success(english_wordService.getEnglishWordAutoScore(id));
+    }
 }
