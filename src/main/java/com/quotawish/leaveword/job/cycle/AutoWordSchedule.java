@@ -66,6 +66,8 @@ public class AutoWordSchedule {
             return;
         }
 
+        WordStatus beforeStatus = WordStatus.getEnumByValue(word.getStatus());
+
         word.setStatus(WordStatus.REVIEWING.name());
         englishWordService.updateById(word);
 
@@ -105,7 +107,7 @@ public class AutoWordSchedule {
 
         JSONObject jsonObject = new JSONObject();
 
-        jsonObject.set("beforeStatus", change.getStatus());
+        jsonObject.set("beforeStatus", beforeStatus);
 
         Flowable<ChatEvent> resp = cozeApi.chat().stream(req);
         WordStatusChange finalChange = change;
@@ -187,6 +189,8 @@ public class AutoWordSchedule {
             return;
         }
 
+        WordStatus beforeStatus = WordStatus.getEnumByValue(word.getStatus());
+
         word.setStatus(WordStatus.PROCESSING.name());
         englishWordService.updateById(word);
 
@@ -213,7 +217,7 @@ public class AutoWordSchedule {
         JSONObject jsonObject = new JSONObject();
 
         jsonObject.set("before", currentInfo);
-        jsonObject.set("beforeStatus", change.getStatus());
+        jsonObject.set("beforeStatus", beforeStatus);
 
         Flowable<ChatEvent> resp = cozeApi.chat().stream(req);
         resp.blockingForEach(
@@ -234,9 +238,15 @@ public class AutoWordSchedule {
 
                             try {
 
-                                JSONObject _entries = JSONUtil.parseObj(totalInfo);
+                                JSONObject json = JSONUtil.parseObj(totalInfo);
 
-                                word.setInfo(totalInfo);
+                                Object code = json.getOrDefault("code", null);
+
+                                if (code == null || (Integer.parseInt(String.valueOf(code)) != 200)) {
+                                    throw new Exception("code error | " + code);
+                                }
+
+                                word.setInfo(json.getStr("data"));
                                 word.setStatus(WordStatus.PROCESSED.name());
 
                             } catch (Exception e) {
@@ -265,7 +275,7 @@ public class AutoWordSchedule {
                         jsonObject.set("tokens", event.getChat().getUsage().getTokenCount());
                         change.setInfo(jsonObject.toString());
 
-                        wordStatusChangeService.save(change);
+                        wordStatusChangeService.saveOrUpdate(change);
                     }
                 });
     }
