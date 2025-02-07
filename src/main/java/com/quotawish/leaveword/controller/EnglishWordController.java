@@ -126,6 +126,11 @@ public class EnglishWordController {
         EnglishWord oldEnglishWord = english_wordService.getById(id);
         ThrowUtils.throwIf(oldEnglishWord == null, ErrorCode.NOT_FOUND_ERROR);
 
+        // 如果正在处理 或者 正在审核 不允许操作
+        if ( WordStatus.getEnumByValue(oldEnglishWord.getStatus()) == WordStatus.REVIEWING) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "正在审核中，请稍后再试");
+        }
+
         english_word.setStatus(WordStatus.PROCESSED.name());
 
         boolean result = english_wordService.updateById(english_word);

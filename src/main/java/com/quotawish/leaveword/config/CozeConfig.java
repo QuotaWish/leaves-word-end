@@ -23,6 +23,9 @@ public class CozeConfig {
     @Value("${coze.addon.supply}")
     private String supplyId;
 
+    @Value("${coze.addon.validate}")
+    private String validateId;
+
 //    /**
 //     * OAuth重定向URI
 //     */

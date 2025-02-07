@@ -110,6 +110,7 @@ coze:
   workflow: 7463390759002275894
   addon:
     supply: 7461618566446923810
+    validate: 7464811329795833907
   oauth:
     jwt:
       clientId:
