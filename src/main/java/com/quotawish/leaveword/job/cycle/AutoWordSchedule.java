@@ -57,7 +57,7 @@ public class AutoWordSchedule {
     @Scheduled(fixedDelay = 45 * 1000)
     public void run() {
         // 取出一个导入的单词 （创建的单词不支持）
-        EnglishWord word = englishWordService.getOne(new QueryWrapper<EnglishWord>().eq("status", WordStatus.UNKNOWN));
+        EnglishWord word = englishWordService.getOne(new QueryWrapper<EnglishWord>().eq("status", WordStatus.UNKNOWN).last("LIMIT 1"));
         if (word == null) {
             return;
         }
@@ -110,6 +110,7 @@ public class AutoWordSchedule {
                                 JSONObject _entries = JSONUtil.parseObj(totalInfo);
 
                                 word.setInfo(totalInfo);
+                                word.setStatus(WordStatus.PROCESSED.name());
 
                             } catch (Exception e) {
                                 log.error("处理单词出错：{}", word.getWord_head(), e);
