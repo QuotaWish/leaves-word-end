@@ -117,8 +117,8 @@ public class AutoWordSchedule {
                             long interval = intervalMs / 1000 / 60;
                             String totalInfo = event.getMessage().getContent();
 
-
                             jsonObject.set("interval", intervalMs);
+                            jsonObject.set("info", totalInfo);
 
                             finalChange.setWordId(word.getId());
                             finalChange.setInfo(jsonObject.toString());
@@ -133,8 +133,6 @@ public class AutoWordSchedule {
                                 if (code == null || (Integer.parseInt(String.valueOf(code)) != 200)) {
                                     throw new Exception("code error | " + code);
                                 }
-
-                                word.setInfo(totalInfo);
 
                                 int score = json.getInt("score", 0);
 
@@ -172,7 +170,7 @@ public class AutoWordSchedule {
                         jsonObject.set("tokens", event.getChat().getUsage().getTokenCount());
                         finalChange.setInfo(jsonObject.toString());
 
-                        wordStatusChangeService.save(finalChange);
+                        wordStatusChangeService.saveOrUpdate(finalChange);
                     }
                 });
     }
