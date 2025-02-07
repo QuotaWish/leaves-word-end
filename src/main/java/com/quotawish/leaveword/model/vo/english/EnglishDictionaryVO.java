@@ -23,39 +23,49 @@ public class EnglishDictionaryVO implements Serializable {
     private Long id;
 
     /**
-     * 标题
+     * 书籍名称
      */
-    private String title;
+    private String name;
 
     /**
-     * 内容
+     * 书籍描述
      */
-    private String content;
+    private String description;
 
     /**
-     * 创建用户 id
+     * 书籍图片URL
      */
-    private Long userId;
+    private String image_url;
+
+    /**
+     * 作者
+     */
+    private String author;
+
+    /**
+     * ISBN编号
+     */
+    private String isbn;
+
+    /**
+     * 出版日期
+     */
+    private String publication_date;
+
+    /**
+     * 出版社
+     */
+    private String publisher;
 
     /**
      * 创建时间
      */
-    private Date createTime;
+    private Date create_time;
 
     /**
      * 更新时间
      */
-    private Date updateTime;
-
-    /**
-     * 标签列表
-     */
-//    private List<String> tagList;
-
-    /**
-     * 创建用户信息
-     */
-    private UserVO user;
+    private Date update_time;
 
     /**
      * 封装类转对象

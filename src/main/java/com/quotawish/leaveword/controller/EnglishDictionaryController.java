@@ -146,7 +146,15 @@ public class EnglishDictionaryController {
      * @return
      */
     @GetMapping("/get/vo")
-    public BaseResponse<EnglishDictionaryVO> getEnglishDictionaryVOById(long id, HttpServletRequest request) {
+    public BaseResponse<EnglishDictionaryVO> getEnglishDictionaryVOById(@RequestParam(name = "id") @Validated String query, HttpServletRequest request) {
+        long id;
+
+        try {
+            id = Long.parseLong(query);
+        } catch (NumberFormatException nfe) {
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR, "id 必须为正整数");
+        }
+
         ThrowUtils.throwIf(id <= 0, ErrorCode.PARAMS_ERROR);
         // 查询数据库
         EnglishDictionary englishDictionary = englishDictionaryService.getById(id);
