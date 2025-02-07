@@ -136,6 +136,12 @@
             <artifactId>coze-api</artifactId>
             <version>0.2.1</version>
         </dependency>
+        <!-- Sa-Token 权限认证，在线文档：https://sa-token.cc -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-spring-boot-starter</artifactId>
+            <version>1.40.0</version>
+        </dependency>
     </dependencies>
 
     <build>

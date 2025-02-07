@@ -4,6 +4,8 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Map;
+
 @Data
 @Configuration
 public class CozeConfig {
@@ -13,6 +15,13 @@ public class CozeConfig {
 
     @Value("${coze.workflow}")
     private String workflowId;
+
+    @Value("${coze.addon}")
+    private Map<String, String> addon;
+
+
+    @Value("${coze.addon.supply}")
+    private String supplyId;
 
 //    /**
 //     * OAuth重定向URI
