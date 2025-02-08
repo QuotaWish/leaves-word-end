@@ -1,5 +1,7 @@
 package com.quotawish.leaveword.mapper;
 
+import com.github.yulichang.base.MPJBaseMapper;
+import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import com.quotawish.leaveword.model.entity.DictionaryWord;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
@@ -9,7 +11,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @createDate 2025-01-27 00:49:17
 * @Entity com.quotawish.leaveword.model.entity.DictionaryWord
 */
-public interface DictionaryWordMapper extends BaseMapper<DictionaryWord> {
+public interface DictionaryWordMapper extends MPJBaseMapper<DictionaryWord> {
 
 }
 

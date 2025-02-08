@@ -2,23 +2,32 @@ package com.quotawish.leaveword.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import com.quotawish.leaveword.common.ErrorCode;
 import com.quotawish.leaveword.constant.CommonConstant;
 import com.quotawish.leaveword.exception.ThrowUtils;
+import com.quotawish.leaveword.mapper.DictionaryWordMapper;
 import com.quotawish.leaveword.mapper.EnglishWordMapper;
+import com.quotawish.leaveword.mapper.UserMapper;
 import com.quotawish.leaveword.model.dto.english.english_word.*;
+import com.quotawish.leaveword.model.entity.DictionaryWord;
+import com.quotawish.leaveword.model.entity.User;
 import com.quotawish.leaveword.model.entity.english.word.EnglishWord;
 import com.quotawish.leaveword.model.entity.english.word.WordStatusChange;
 import com.quotawish.leaveword.model.enums.WordStatus;
+import com.quotawish.leaveword.model.vo.english.DictionaryWordWithWordVO;
 import com.quotawish.leaveword.model.vo.english.EnglishWordVO;
+import com.quotawish.leaveword.service.DictionaryWordService;
 import com.quotawish.leaveword.service.EnglishWordService;
 import com.quotawish.leaveword.service.UserService;
 import com.quotawish.leaveword.utils.SqlUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +47,10 @@ import java.util.stream.Stream;
 public class EnglishWordServiceImpl extends ServiceImpl<EnglishWordMapper, EnglishWord> implements EnglishWordService {
 
     @Resource
-    private UserService userService;
+    private DictionaryWordService dwService;
+
+    @Autowired
+    private DictionaryWordMapper dwMapper;
 
     @Resource
     private WordStatusChangeServiceImpl statusChangeService;
@@ -86,6 +98,41 @@ public class EnglishWordServiceImpl extends ServiceImpl<EnglishWordMapper, Engli
                 sortOrder.equals(CommonConstant.SORT_ORDER_ASC),
                 sortField);
         return queryWrapper;
+    }
+
+    @Override
+    public IPage<DictionaryWordWithWordVO> getQueryWrapper(EnglishWordQueryDictRequest request) {
+        Long id = request.getId();
+        Long notId = request.getNotId();
+        String status = request.getStatus();
+        String searchText = request.getSearchText();
+        String sortField = request.getSortField();
+        String sortOrder = request.getSortOrder();
+
+        MPJLambdaWrapper<DictionaryWordWithWordVO> wrapper = new MPJLambdaWrapper<DictionaryWordWithWordVO>()
+                .selectAll(DictionaryWord.class)
+                .selectAll(EnglishWord.class)
+                .leftJoin(EnglishWord.class, EnglishWord::getId, DictionaryWord::getWord_id)
+                .eq(DictionaryWord::getDictionary_id, request.getDict_id())
+                ;
+
+        // 从多字段中搜索
+        if (StringUtils.isNotBlank(searchText)) {
+            // 需要拼接查询条件
+            wrapper.and(qw -> qw.like(EnglishWord::getWord_head, searchText).or().like(EnglishWord::getInfo, searchText));
+        }
+
+        // 精确查询
+        wrapper.ne(ObjectUtils.isNotEmpty(notId), DictionaryWord::getWord_id, notId);
+        wrapper.eq(ObjectUtils.isNotEmpty(id), DictionaryWord::getWord_id, id);
+        wrapper.eq(StringUtils.isNotBlank(status), EnglishWord::getStatus, status);
+
+        wrapper.orderBy(SqlUtils.validSortField(sortField),
+                sortOrder.equals(CommonConstant.SORT_ORDER_ASC), DictionaryWord::getCreated_at);
+
+        IPage<DictionaryWordWithWordVO> dictionaryWordWithWordVOIPage = dwMapper.selectJoinPage(new Page<>(request.getCurrent(), request.getPageSize()), DictionaryWordWithWordVO.class, wrapper);
+
+        return dictionaryWordWithWordVOIPage;
     }
 
     /**

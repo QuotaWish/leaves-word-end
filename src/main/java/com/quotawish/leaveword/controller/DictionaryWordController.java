@@ -15,6 +15,8 @@ import com.quotawish.leaveword.model.entity.DictionaryWord;
 import com.quotawish.leaveword.model.vo.english.DictionaryWordVO;
 import com.quotawish.leaveword.service.DictionaryWordService;
 import com.quotawish.leaveword.service.UserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.validation.annotation.Validated;
@@ -32,6 +34,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/dictionary_word")
 @Slf4j
+@Api(tags = "DictionaryWord")
 public class DictionaryWordController {
 
     @Resource
@@ -40,9 +43,7 @@ public class DictionaryWordController {
     @Resource
     private UserService userService;
 
-    /**
-     * 批量关联词典和单词
-     */
+    @ApiOperation("批量关联词典和单词")
     @PostMapping("/add/batch")
     public BaseResponse<int[]> addDictionaryWordBatch(@RequestBody @Validated EnglishWordRelativeBatchRequest request) {
         Long[] wordIds = request.getWords().stream().toArray(Long[]::new);
@@ -52,9 +53,7 @@ public class DictionaryWordController {
         return ResultUtils.success(result);
     }
 
-    /**
-     * 根据某个词典获取对应的关系列表
-     */
+    @ApiOperation("根据某个词典获取对应的关系列表")
     @PostMapping("/list/batch")
     public BaseResponse< List<DictionaryWord>> listDictionaryWordBatch(@RequestBody @Validated DictionaryWordQueryRequest request) {
         List<DictionaryWord> result = dictionary_wordService.listDictionaryWordBatch(request.getDictionary_id());
@@ -62,13 +61,7 @@ public class DictionaryWordController {
         return ResultUtils.success(result);
     }
 
-    /**
-     * 创建词典单词表
-     *
-     * @param dictionary_wordAddRequest
-     * @param request
-     * @return
-     */
+    @ApiOperation("创建词典单词表")
     @PostMapping("/add")
     public BaseResponse<Long> addDictionaryWord(@RequestBody @Validated DictionaryWordAddRequest dictionary_wordAddRequest, HttpServletRequest request) {
         DictionaryWord dictionary_word = new DictionaryWord();
@@ -81,13 +74,7 @@ public class DictionaryWordController {
         return ResultUtils.success(newDictionaryWordId);
     }
 
-    /**
-     * 删除词典单词表
-     *
-     * @param deleteRequest
-     * @param request
-     * @return
-     */
+    @ApiOperation("删除词典单词表")
     @PostMapping("/delete")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> deleteDictionaryWord(@RequestBody @Validated DeleteRequest deleteRequest, HttpServletRequest request) {
@@ -102,12 +89,7 @@ public class DictionaryWordController {
         return ResultUtils.success(true);
     }
 
-    /**
-     * 根据 id 获取词典单词表（封装类）
-     *
-     * @param id
-     * @return
-     */
+    @ApiOperation("根据 id 获取词典单词表（封装类）")
     @GetMapping("/get/vo")
     public BaseResponse<DictionaryWordVO> getDictionaryWordVOById(long id, HttpServletRequest request) {
         ThrowUtils.throwIf(id <= 0, ErrorCode.PARAMS_ERROR);
@@ -118,12 +100,7 @@ public class DictionaryWordController {
         return ResultUtils.success(dictionary_wordService.getDictionaryWordVO(dictionary_word, request));
     }
 
-    /**
-     * 分页获取词典单词表列表（仅管理员可用）
-     *
-     * @param dictionary_wordQueryRequest
-     * @return
-     */
+    @ApiOperation("分页获取词典单词表列表（仅管理员可用）")
     @PostMapping("/list/page")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Page<DictionaryWord>> listDictionaryWordByPage(@RequestBody DictionaryWordQueryRequest dictionary_wordQueryRequest) {
@@ -135,13 +112,7 @@ public class DictionaryWordController {
         return ResultUtils.success(dictionary_wordPage);
     }
 
-    /**
-     * 分页获取词典单词表列表（封装类）
-     *
-     * @param dictionary_wordQueryRequest
-     * @param request
-     * @return
-     */
+    @ApiOperation("分页获取词典单词表列表（封装类）")
     @PostMapping("/list/page/vo")
     public BaseResponse<Page<DictionaryWordVO>> listDictionaryWordVOByPage(@RequestBody DictionaryWordQueryRequest dictionary_wordQueryRequest,
                                                                HttpServletRequest request) {

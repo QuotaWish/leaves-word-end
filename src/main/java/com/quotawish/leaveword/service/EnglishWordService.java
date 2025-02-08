@@ -1,14 +1,14 @@
 package com.quotawish.leaveword.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.quotawish.leaveword.model.dto.english.english_word.EnglishWordAddBatchRequest;
-import com.quotawish.leaveword.model.dto.english.english_word.EnglishWordGetBatchRequest;
-import com.quotawish.leaveword.model.dto.english.english_word.EnglishWordQueryRequest;
-import com.quotawish.leaveword.model.dto.english.english_word.EnglishWordScoreRequest;
+import com.github.yulichang.wrapper.MPJLambdaWrapper;
+import com.quotawish.leaveword.model.dto.english.english_word.*;
 import com.quotawish.leaveword.model.entity.english.word.EnglishWord;
 import com.quotawish.leaveword.model.entity.english.word.WordStatusChange;
+import com.quotawish.leaveword.model.vo.english.DictionaryWordWithWordVO;
 import com.quotawish.leaveword.model.vo.english.EnglishWordVO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,7 +27,15 @@ public interface EnglishWordService extends IService<EnglishWord> {
      * @return
      */
     QueryWrapper<EnglishWord> getQueryWrapper(EnglishWordQueryRequest english_wordQueryRequest);
-    
+
+    /**
+     * 获取查询条件（词典）
+     *
+     * @param request
+     * @return
+     */
+    IPage<DictionaryWordWithWordVO> getQueryWrapper(EnglishWordQueryDictRequest request);
+
     /**
      * 获取英语单词封装
      *

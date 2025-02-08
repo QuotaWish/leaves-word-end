@@ -1,6 +1,7 @@
 package com.quotawish.leaveword.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.github.yulichang.base.MPJBaseMapper;
 import com.quotawish.leaveword.model.entity.english.word.EnglishWord;
 
 /**
@@ -9,7 +10,7 @@ import com.quotawish.leaveword.model.entity.english.word.EnglishWord;
 * @createDate 2025-01-18 17:13:43
 * @Entity generator.domain.EnglishWord
 */
-public interface EnglishWordMapper extends BaseMapper<EnglishWord> {
+public interface EnglishWordMapper extends MPJBaseMapper<EnglishWord> {
 
 }
 

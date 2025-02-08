@@ -8,6 +8,7 @@ import com.quotawish.leaveword.constant.CommonConstant;
 import com.quotawish.leaveword.mapper.DictionaryWordMapper;
 import com.quotawish.leaveword.model.dto.english.dictionary_word.DictionaryWordQueryRequest;
 import com.quotawish.leaveword.model.entity.DictionaryWord;
+import com.quotawish.leaveword.model.enums.WordStatus;
 import com.quotawish.leaveword.model.vo.english.DictionaryWordVO;
 import com.quotawish.leaveword.service.DictionaryWordService;
 import com.quotawish.leaveword.service.UserService;
@@ -137,6 +138,7 @@ public class DictionaryWordServiceImpl extends ServiceImpl<DictionaryWordMapper,
 
             List<Long> existingBatchWordHeads = getBaseMapper().selectObjs(
                     new QueryWrapper<DictionaryWord>().select("word_id").in("word_id", batchWordId)
+                            .eq("status", WordStatus.APPROVED)
             ).stream().map(o -> (Long) o).collect(Collectors.toList());
 
             existingWordHeads.addAll(existingBatchWordHeads);

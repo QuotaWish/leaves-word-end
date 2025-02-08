@@ -55,10 +55,10 @@ public class AutoWordSchedule {
 
 
     /**
-     * 每30s执行一次
+     * 每600s执行一次
      */
     @Async
-    @Scheduled(fixedDelay = 30 * 1000)
+    @Scheduled(fixedDelay = 600 * 1000)
     public void autoRate() {
         // 取出一个已处理的单词 （创建的单词不支持）
         EnglishWord word = englishWordService.getOne(new QueryWrapper<EnglishWord>().eq("status", WordStatus.PROCESSED).last("LIMIT 1"));
@@ -178,10 +178,10 @@ public class AutoWordSchedule {
     }
 
     /**
-     * 每30s执行一次
+     * 每1800s执行一次
      */
     @Async
-    @Scheduled(fixedDelay = 30 * 1000)
+    @Scheduled(fixedDelay = 1800 * 1000)
     public void autoSupply() {
         // 取出一个导入的单词 （创建的单词不支持）
         EnglishWord word = englishWordService.getOne(new QueryWrapper<EnglishWord>().eq("status", WordStatus.UNKNOWN).last("LIMIT 1"));

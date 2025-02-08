@@ -1,6 +1,7 @@
 package com.quotawish.leaveword.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.quotawish.leaveword.annotation.AuthCheck;
 import com.quotawish.leaveword.common.BaseResponse;
@@ -15,9 +16,12 @@ import com.quotawish.leaveword.model.entity.User;
 import com.quotawish.leaveword.model.entity.english.word.EnglishWord;
 import com.quotawish.leaveword.model.entity.english.word.WordStatusChange;
 import com.quotawish.leaveword.model.enums.WordStatus;
+import com.quotawish.leaveword.model.vo.english.DictionaryWordWithWordVO;
 import com.quotawish.leaveword.model.vo.english.EnglishWordVO;
 import com.quotawish.leaveword.service.EnglishWordService;
 import com.quotawish.leaveword.service.UserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.validation.annotation.Validated;
@@ -34,6 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 @RequestMapping("/english_word")
 @Slf4j
+@Api(tags = "EnglishWords")
 public class EnglishWordController {
 
     @Resource
@@ -76,12 +81,10 @@ public class EnglishWordController {
         return ResultUtils.success(english_wordService.batchImportEnglishWord(batchReq));
     }
 
-    /**
-     * 批量获取英语单词Id
-     */
     @PostMapping("/get/batch")
+    @ApiOperation("批量获取英语单词Id")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<Long[]> addEnglishWordBatch(@RequestBody @Validated EnglishWordGetBatchRequest batchReq, HttpServletRequest request) {
+    public BaseResponse<Long[]> getEnglishWordBatch(@RequestBody @Validated EnglishWordGetBatchRequest batchReq, HttpServletRequest request) {
 
         return ResultUtils.success(english_wordService.batchGetEnglishWordId(batchReq));
     }
@@ -167,14 +170,9 @@ public class EnglishWordController {
         return ResultUtils.success(english_wordService.getEnglishWordVO(english_word, request));
     }
 
-    /**
-     * 分页获取英语单词列表（仅管理员可用）
-     *
-     * @param english_wordQueryRequest
-     * @return
-     */
     @PostMapping("/list/page")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    @ApiOperation("分页获取英语单词列表")
     public BaseResponse<Page<EnglishWord>> listEnglishWordByPage(@RequestBody EnglishWordQueryRequest english_wordQueryRequest) {
         long current = english_wordQueryRequest.getCurrent();
         long size = english_wordQueryRequest.getPageSize();
@@ -182,6 +180,17 @@ public class EnglishWordController {
         Page<EnglishWord> english_wordPage = english_wordService.page(new Page<>(current, size),
                 english_wordService.getQueryWrapper(english_wordQueryRequest));
         return ResultUtils.success(english_wordPage);
+    }
+
+
+    @PostMapping("/list/page/dict")
+    @ApiOperation("分页获取指定词典英语单词列表")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<IPage<DictionaryWordWithWordVO>> listEnglishWordByPage(@RequestBody EnglishWordQueryDictRequest english_wordQueryRequest) {
+        long current = english_wordQueryRequest.getCurrent();
+        long size = english_wordQueryRequest.getPageSize();
+
+        return ResultUtils.success(english_wordService.getQueryWrapper(english_wordQueryRequest));
     }
 
     /**
@@ -192,6 +201,7 @@ public class EnglishWordController {
      * @return
      */
     @PostMapping("/list/page/vo")
+    @ApiOperation("分页获取封装英语单词列表")
     public BaseResponse<Page<EnglishWordVO>> listEnglishWordVOByPage(@RequestBody EnglishWordQueryRequest english_wordQueryRequest,
                                                                HttpServletRequest request) {
         long current = english_wordQueryRequest.getCurrent();
