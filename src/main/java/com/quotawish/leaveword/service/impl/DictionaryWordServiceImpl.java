@@ -138,7 +138,6 @@ public class DictionaryWordServiceImpl extends ServiceImpl<DictionaryWordMapper,
 
             List<Long> existingBatchWordHeads = getBaseMapper().selectObjs(
                     new QueryWrapper<DictionaryWord>().select("word_id").in("word_id", batchWordId)
-                            .eq("status", WordStatus.APPROVED)
             ).stream().map(o -> (Long) o).collect(Collectors.toList());
 
             existingWordHeads.addAll(existingBatchWordHeads);

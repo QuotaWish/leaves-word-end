@@ -187,8 +187,6 @@ public class EnglishWordController {
     @ApiOperation("分页获取指定词典英语单词列表")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<IPage<DictionaryWordWithWordVO>> listEnglishWordByPage(@RequestBody EnglishWordQueryDictRequest english_wordQueryRequest) {
-        long current = english_wordQueryRequest.getCurrent();
-        long size = english_wordQueryRequest.getPageSize();
 
         return ResultUtils.success(english_wordService.getQueryWrapper(english_wordQueryRequest));
     }

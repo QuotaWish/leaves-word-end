@@ -113,6 +113,7 @@ public class EnglishWordServiceImpl extends ServiceImpl<EnglishWordMapper, Engli
                 .selectAll(DictionaryWord.class)
                 .selectAll(EnglishWord.class)
                 .leftJoin(EnglishWord.class, EnglishWord::getId, DictionaryWord::getWord_id)
+//                .selectAs(EnglishWord.class, DictionaryWordWithWordVO::getWord)
                 .eq(DictionaryWord::getDictionary_id, request.getDict_id())
                 ;
 
