@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 public enum WordStatus {
     UNKNOWN("未知"),
+    DRAFT("草稿"),
     CREATED("已创建"),
     UPLOADING("上传中"),
     UPLOADED("已上传"),

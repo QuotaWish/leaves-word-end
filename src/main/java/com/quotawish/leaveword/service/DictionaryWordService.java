@@ -8,6 +8,7 @@ import com.quotawish.leaveword.model.entity.DictionaryWord;
 import com.quotawish.leaveword.model.vo.english.DictionaryWordVO;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * 词典单词表服务
@@ -41,4 +42,15 @@ public interface DictionaryWordService extends IService<DictionaryWord> {
      * @return
      */
     Page<DictionaryWordVO> getDictionaryWordVOPage(Page<DictionaryWord> dictionary_wordPage, HttpServletRequest request);
+
+    /**
+     * 批量关联词典和单词
+     */
+    int[] batchRelativeDictionaryWord(Long dictionary_id, Long[] words);
+
+    /**
+     * 根据某个词典获取词典单词列表
+     * 注意，本接口是一次性返回所有数据 所以有限流 TODO: limit
+     */
+    List<DictionaryWord> listDictionaryWordBatch(Long dictionary_id);
 }

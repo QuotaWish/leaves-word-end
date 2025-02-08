@@ -8,10 +8,7 @@ import com.quotawish.leaveword.common.ErrorCode;
 import com.quotawish.leaveword.constant.CommonConstant;
 import com.quotawish.leaveword.exception.ThrowUtils;
 import com.quotawish.leaveword.mapper.EnglishWordMapper;
-import com.quotawish.leaveword.model.dto.english.english_word.EnglishWordAddBatchRequest;
-import com.quotawish.leaveword.model.dto.english.english_word.EnglishWordAddRequest;
-import com.quotawish.leaveword.model.dto.english.english_word.EnglishWordQueryRequest;
-import com.quotawish.leaveword.model.dto.english.english_word.EnglishWordScoreRequest;
+import com.quotawish.leaveword.model.dto.english.english_word.*;
 import com.quotawish.leaveword.model.entity.english.word.EnglishWord;
 import com.quotawish.leaveword.model.entity.english.word.WordStatusChange;
 import com.quotawish.leaveword.model.enums.WordStatus;
@@ -215,6 +212,15 @@ public class EnglishWordServiceImpl extends ServiceImpl<EnglishWordMapper, Engli
 
         return new int[] {successfulInserts, existingWords, failedInserts};
 
+    }
+
+    @Override
+    public Long[] batchGetEnglishWordId(EnglishWordGetBatchRequest request) {
+        Collection<String> words = request.getWords();
+
+        return getBaseMapper().selectObjs(
+                new QueryWrapper<EnglishWord>().select("id").in("word_head", words)
+        ).stream().map(Object::toString).map(Long::parseLong).toArray(Long[]::new);
     }
 
     @Override

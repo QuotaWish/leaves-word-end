@@ -77,6 +77,16 @@ public class EnglishWordController {
     }
 
     /**
+     * 批量获取英语单词Id
+     */
+    @PostMapping("/get/batch")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Long[]> addEnglishWordBatch(@RequestBody @Validated EnglishWordGetBatchRequest batchReq, HttpServletRequest request) {
+
+        return ResultUtils.success(english_wordService.batchGetEnglishWordId(batchReq));
+    }
+
+    /**
      * 对某个英语单词评分 同时上传AI评分
      */
     @PostMapping("/score")
@@ -133,7 +143,7 @@ public class EnglishWordController {
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "正在审核中，请稍后再试");
         }
 
-        english_word.setStatus(WordStatus.PROCESSED.name());
+        english_word.setStatus(english_wordUpdateRequest.isDraft() ? WordStatus.DRAFT.name() : WordStatus.PROCESSED.name());
 
         boolean result = english_wordService.updateById(english_word);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);

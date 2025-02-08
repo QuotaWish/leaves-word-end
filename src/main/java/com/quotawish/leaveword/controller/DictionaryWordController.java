@@ -10,6 +10,7 @@ import com.quotawish.leaveword.constant.UserConstant;
 import com.quotawish.leaveword.exception.ThrowUtils;
 import com.quotawish.leaveword.model.dto.english.dictionary_word.DictionaryWordAddRequest;
 import com.quotawish.leaveword.model.dto.english.dictionary_word.DictionaryWordQueryRequest;
+import com.quotawish.leaveword.model.dto.english.dictionary_word.EnglishWordRelativeBatchRequest;
 import com.quotawish.leaveword.model.entity.DictionaryWord;
 import com.quotawish.leaveword.model.vo.english.DictionaryWordVO;
 import com.quotawish.leaveword.service.DictionaryWordService;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * 词典单词表接口
@@ -37,6 +39,28 @@ public class DictionaryWordController {
 
     @Resource
     private UserService userService;
+
+    /**
+     * 批量关联词典和单词
+     */
+    @PostMapping("/add/batch")
+    public BaseResponse<int[]> addDictionaryWordBatch(@RequestBody @Validated EnglishWordRelativeBatchRequest request) {
+        Long[] wordIds = request.getWords().stream().toArray(Long[]::new);
+
+        int[] result = dictionary_wordService.batchRelativeDictionaryWord(request.getDictionary_id(), wordIds);
+
+        return ResultUtils.success(result);
+    }
+
+    /**
+     * 根据某个词典获取对应的关系列表
+     */
+    @PostMapping("/list/batch")
+    public BaseResponse< List<DictionaryWord>> listDictionaryWordBatch(@RequestBody @Validated DictionaryWordQueryRequest request) {
+        List<DictionaryWord> result = dictionary_wordService.listDictionaryWordBatch(request.getDictionary_id());
+
+        return ResultUtils.success(result);
+    }
 
     /**
      * 创建词典单词表

@@ -14,12 +14,14 @@ import com.quotawish.leaveword.service.UserService;
 import com.quotawish.leaveword.utils.SqlUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 词典单词表服务实现
@@ -105,6 +107,76 @@ public class DictionaryWordServiceImpl extends ServiceImpl<DictionaryWordMapper,
 
         dictionary_wordVOPage.setRecords(dictionary_wordVOList);
         return dictionary_wordVOPage;
+    }
+
+    @Override
+    public int[] batchRelativeDictionaryWord(Long dictionary_id, Long[] words) {
+        Stream<DictionaryWord> dwStream = Arrays.stream(words).map(word -> {
+            DictionaryWord dw = new DictionaryWord();
+
+            dw.setDictionary_id(dictionary_id);
+            dw.setWord_id(word);
+
+            return dw;
+        });
+
+        List<DictionaryWord> englishWordList = dwStream.collect(Collectors.toList());
+
+        // 使用分页查询来获取 existingDictionaryWordHeads
+        int pageSize = 1000; // 每页大小
+        int totalWords = englishWordList.size();
+        Set<Long> existingWordHeads = new HashSet<>();
+
+        for (int offset = 0; offset < totalWords; offset += pageSize) {
+            int limit = Math.min(pageSize, totalWords - offset);
+            List<Long> batchWordId = englishWordList.stream()
+                    .skip(offset)
+                    .limit(limit)
+                    .map(DictionaryWord::getWord_id)
+                    .collect(Collectors.toList());
+
+            List<Long> existingBatchWordHeads = getBaseMapper().selectObjs(
+                    new QueryWrapper<DictionaryWord>().select("word_id").in("word_id", batchWordId)
+            ).stream().map(o -> (Long) o).collect(Collectors.toList());
+
+            existingWordHeads.addAll(existingBatchWordHeads);
+        }
+
+        List<DictionaryWord> filteredEnglishWordList = englishWordList.stream()
+                .filter(englishWord -> !existingWordHeads.contains(englishWord.getWord_id()))
+                .collect(Collectors.toList());
+
+        if (filteredEnglishWordList.isEmpty()) {
+            log.info("All words already exist in the database.");
+            return new int[] {0, existingWordHeads.size(), 0};
+        }
+
+        // 使用批量插入时检查是否已经存在
+        List<DictionaryWord> successfullyInsertedWords = new ArrayList<>();
+        List<DictionaryWord> failedInsertedWords = new ArrayList<>();
+
+        for (DictionaryWord englishWord : filteredEnglishWordList) {
+            try {
+                getBaseMapper().insert(englishWord);
+                successfullyInsertedWords.add(englishWord);
+            } catch (DuplicateKeyException e) {
+                failedInsertedWords.add(englishWord);
+            }
+        }
+
+        int successfulInserts = successfullyInsertedWords.size();
+        int existingWords = existingWordHeads.size();
+        int failedInserts = failedInsertedWords.size();
+
+        log.info("Successfully inserted {} words relationship.", successfulInserts);
+        log.info("Failed to insert {} words relationship.", failedInserts);
+
+        return new int[] {successfulInserts, existingWords, failedInserts};
+    }
+
+    @Override
+    public List<DictionaryWord> listDictionaryWordBatch(Long dictionary_id) {
+        return baseMapper.selectList(new QueryWrapper<DictionaryWord>().eq("dictionary_id", dictionary_id));
     }
 
 }

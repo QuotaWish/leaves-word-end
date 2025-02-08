@@ -35,5 +35,8 @@ public class EnglishWordUpdateRequest implements Serializable {
     @Length(max = 1024 * 128, message = "内容长度不能超过1024*128个字符")
     private String info;
 
+    /** 是否保存为草稿 **/
+    private boolean draft = false;
+
     private static final long serialVersionUID = 1L;
 }
