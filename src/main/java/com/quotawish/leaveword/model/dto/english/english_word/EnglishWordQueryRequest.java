@@ -29,17 +29,12 @@ public class EnglishWordQueryRequest extends PageRequest implements Serializable
     /**
      * 搜索词
      */
-    private String searchText;
+    private String word_head;
 
     /**
      * 当前状态
      */
     private String status;
-
-    /**
-     * 创建用户 id
-     */
-    private Long userId;
 
     private static final long serialVersionUID = 1L;
 }

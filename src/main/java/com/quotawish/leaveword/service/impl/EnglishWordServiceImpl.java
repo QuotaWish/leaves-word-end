@@ -73,15 +73,15 @@ public class EnglishWordServiceImpl extends ServiceImpl<EnglishWordMapper, Engli
 //        String title = english_wordQueryRequest.getTitle();
 //        String content = english_wordQueryRequest.getStatus();
         String status = english_wordQueryRequest.getStatus();
-        String searchText = english_wordQueryRequest.getSearchText();
+        String searchText = english_wordQueryRequest.getWord_head();
         String sortField = english_wordQueryRequest.getSortField();
         String sortOrder = english_wordQueryRequest.getSortOrder();
-        Long userId = english_wordQueryRequest.getUserId();
+
         // todo 补充需要的查询条件
         // 从多字段中搜索
         if (StringUtils.isNotBlank(searchText)) {
             // 需要拼接查询条件
-            queryWrapper.and(qw -> qw.like("title", searchText).or().like("content", searchText));
+            queryWrapper.and(qw -> qw.like("word_head", searchText).or().like("info", searchText));
         }
         // 模糊查询
 //        queryWrapper.like(StringUtils.isNotBlank(title), "title", title);
@@ -90,7 +90,6 @@ public class EnglishWordServiceImpl extends ServiceImpl<EnglishWordMapper, Engli
         // 精确查询
         queryWrapper.ne(ObjectUtils.isNotEmpty(notId), "id", notId);
         queryWrapper.eq(ObjectUtils.isNotEmpty(id), "id", id);
-        queryWrapper.eq(ObjectUtils.isNotEmpty(userId), "userId", userId);
         queryWrapper.eq(StringUtils.isNotBlank(status), "status", status);
 
         // 排序规则

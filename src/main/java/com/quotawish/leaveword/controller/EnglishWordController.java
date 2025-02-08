@@ -226,7 +226,7 @@ public class EnglishWordController {
         ThrowUtils.throwIf(english_wordQueryRequest == null, ErrorCode.PARAMS_ERROR);
         // 补充查询条件，只查询当前登录用户的数据
         User loginUser = userService.getLoginUser(request);
-        english_wordQueryRequest.setUserId(loginUser.getId());
+//        english_wordQueryRequest.setUserId(loginUser.getId());
         long current = english_wordQueryRequest.getCurrent();
         long size = english_wordQueryRequest.getPageSize();
         // 限制爬虫
