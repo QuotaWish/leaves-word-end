@@ -78,6 +78,15 @@ CREATE TABLE if not exists english_word (
 ALTER TABLE english_word
     ADD COLUMN status VARCHAR(255) NULL COMMENT '当前状态';
 
+alter table english_word
+    add manual_score int default 0 null comment '人工评分';
+
+alter table english_word
+    add ai_score int null;
+
+alter table english_word
+    add reviewer bigint null;
+
 
 -- 单词变更记录表
 CREATE TABLE if not exists english_word_change_log (

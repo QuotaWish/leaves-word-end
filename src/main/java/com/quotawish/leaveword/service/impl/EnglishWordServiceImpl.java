@@ -271,36 +271,20 @@ public class EnglishWordServiceImpl extends ServiceImpl<EnglishWordMapper, Engli
     }
 
     @Override
-    public boolean scoreEnglishWord(EnglishWordScoreRequest request) {
+    public void scoreEnglishWord(EnglishWordScoreRequest request, Long user) {
         EnglishWord byId = getById(request.getId());
         ThrowUtils.throwIf(byId == null, ErrorCode.NOT_FOUND_ERROR);
 
         Integer score = request.getScore();
-        Integer aiScore = request.getAiScore();
 
-        double totalScore = score * 0.4 + aiScore * 0.6;
-        boolean passValidate = totalScore > 85;
-
-        WordStatusChange wordStatusChange = new WordStatusChange();
-
-        wordStatusChange.setWordId(request.getId());
-        wordStatusChange.setComment(passValidate ? "评分通过审核" : "评分未通过审核");
-        wordStatusChange.setInfo(request.getAiContent());
-
-        byId.setStatus(passValidate ? WordStatus.APPROVED.name() : WordStatus.REJECTED.name());
-        wordStatusChange.setStatus(byId.getStatus());
-
-        updateById(byId);
-        statusChangeService.save(wordStatusChange);
-
-        return passValidate;
+        byId.setManual_score(score);
+        byId.setReviewer(user);
     }
 
     @Override
     public WordStatusChange getEnglishWordAutoScore(Long id) {
-        WordStatusChange change = statusChangeService.getOne(new QueryWrapper<WordStatusChange>().eq("word_id", id).eq("COMMENT", "AI_AUTO_RATE").last("LIMIT 1"));
 
-        return change;
+        return statusChangeService.getOne(new QueryWrapper<WordStatusChange>().eq("word_id", id).eq("COMMENT", "AI_AUTO_RATE").last("LIMIT 1"));
     }
 
 }

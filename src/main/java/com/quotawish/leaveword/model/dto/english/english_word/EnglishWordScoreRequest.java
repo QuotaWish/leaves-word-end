@@ -20,11 +20,5 @@ public class EnglishWordScoreRequest implements Serializable {
     @NotNull(message = "评分")
     private Integer score;
 
-    @NotNull(message = "AI评分")
-    private Integer aiScore;
-
-    @NotNull(message = "AI评分内容")
-    private String aiContent;
-
     private static final long serialVersionUID = 1L;
 }

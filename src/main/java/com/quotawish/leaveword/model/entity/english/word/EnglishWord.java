@@ -34,6 +34,10 @@ public class EnglishWord implements Serializable {
      */
     private String info;
 
+    private int ai_score, manual_score;
+
+    private Long reviewer;
+
     /**
      * 创建时间
      */
@@ -106,6 +110,8 @@ public class EnglishWord implements Serializable {
             case "examplePhrases":
             case "parts":
                 return value instanceof List;
+            case "id":
+                return true;
             default:
                 return false;
         }

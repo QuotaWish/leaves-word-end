@@ -89,13 +89,15 @@ public class EnglishWordController {
         return ResultUtils.success(english_wordService.batchGetEnglishWordId(batchReq));
     }
 
-    /**
-     * 对某个英语单词评分 同时上传AI评分
-     */
+    @ApiOperation("对某个英语单词评分")
     @PostMapping("/score")
-    public BaseResponse<Boolean> scoreEnglishWord(@RequestBody @Validated EnglishWordScoreRequest request) {
+    public BaseResponse<?> scoreEnglishWord(@RequestBody @Validated EnglishWordScoreRequest request, HttpServletRequest req) {
+        User user = userService.getLoginUser(req);
+        ThrowUtils.throwIf(user == null, ErrorCode.NOT_LOGIN_ERROR);
 
-        return ResultUtils.success(english_wordService.scoreEnglishWord(request));
+        english_wordService.scoreEnglishWord(request, user.getId());
+
+        return ResultUtils.success(true);
     }
 
     /**

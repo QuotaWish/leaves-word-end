@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
+import com.quotawish.leaveword.common.BaseResponse;
+import com.quotawish.leaveword.common.ResultUtils;
 import com.quotawish.leaveword.constant.CommonConstant;
 import com.quotawish.leaveword.model.dto.english.status_change.EnglishWordStatusChangeQueryRequest;
 import com.quotawish.leaveword.model.entity.english.word.EnglishWord;
@@ -28,7 +30,7 @@ import java.util.*;
 public class WordStatusChangeServiceImpl extends ServiceImpl<WordStatusChangeMapper, WordStatusChange>
     implements WordStatusChangeService{
     @Override
-    public List<WordStatusChange> selectListByWordId(Long wordId, Long lastId) {
+    public BaseResponse<List<WordStatusChange>> selectListByWordId(Long wordId, Long lastId) {
         // 如果lastId是-1 那么就获取最新的10条 否则就从lastId往后获取
         QueryWrapper<WordStatusChange> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("word_id", wordId);
@@ -38,7 +40,7 @@ public class WordStatusChangeServiceImpl extends ServiceImpl<WordStatusChangeMap
         // 优先按照update_time排序 然后是create_time
         queryWrapper.orderByDesc("update_time").orderByDesc("create_time").last("LIMIT 10");
 
-        return list(queryWrapper);
+        return ResultUtils.success(list(queryWrapper));
     }
 
     /**

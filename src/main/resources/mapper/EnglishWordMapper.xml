@@ -9,6 +9,9 @@
             <result property="word_head" column="word_head" />
             <result property="info" column="info" />
             <result property="status" column="status" />
+            <result property="ai_score" column="ai_score" />
+            <result property="manual_score" column="manual_score" />
+            <result property="reviewer" column="reviewer" />
             <result property="create_time" column="create_time" />
             <result property="update_time" column="update_time" />
             <result property="is_delete" column="is_delete" />
@@ -16,6 +19,6 @@
 
     <sql id="Base_Column_List">
         id,word_head,info,status,create_time,update_time,
-        is_delete
+        is_delete,ai_score,manual_score,reviewer
     </sql>
 </mapper>

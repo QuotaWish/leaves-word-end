@@ -69,7 +69,7 @@ public interface EnglishWordService extends IService<EnglishWord> {
     /**
      * 对某个英语单词评分 同时上传AI评分
      */
-    boolean scoreEnglishWord(EnglishWordScoreRequest request);
+    void scoreEnglishWord(EnglishWordScoreRequest request, Long user);
 
     /**
      * 获取某个单词的自动AI评分 （每次处理完成后都会自动刷新一个评分）

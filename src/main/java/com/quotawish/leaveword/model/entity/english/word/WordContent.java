@@ -1,7 +1,10 @@
 package com.quotawish.leaveword.model.entity.english.word;
 
+import cn.hutool.core.util.StrUtil;
 import lombok.Data;
+import org.springframework.beans.BeanUtils;
 
+import java.net.URL;
 import java.util.List;
 
 @Data
@@ -66,4 +69,119 @@ public class WordContent {
      * 背景故事，包含单词的背景故事。
      */
     private String backgroundStory;
+
+    /**
+     * 进行的修正，对数据进行一些必要的修正。
+     * 此项会返回一个新的修复副本 而不是直接改动本身
+     */
+    public static WordContent structFixing(WordContent source) {
+        WordContent fixed = new WordContent();
+        BeanUtils.copyProperties(source, fixed);
+
+        fixed.setImg(fixImg(fixed.getImg()));
+
+        fixed.setTransform(fixTransform(fixed.getTransform()));
+
+        fixed.setTranslation(fixTranslation(fixed.getTranslation()));
+
+        fixed.setExamplePhrases(fixExamplePhrases(fixed.getExamplePhrases()));
+
+        return fixed;
+    }
+
+    /**
+     * 对图片的修正
+     * 1.如果图片存在空字符串 或者不符合 https 的地址 会自动去除
+     * 2.如果图片的hostname不合法 也会去除（比如 example.com / localhost / 127.0.0.1）
+     * 3.如果图片的hostname合法 但是没有https协议 会自动加上
+     */
+    public static List<String> fixImg(List<String> img) {
+        if (img != null) {
+            img.removeIf(item -> item == null || !item.startsWith("https://") || !item.contains("."));
+            img.forEach(item -> {
+                if (!item.startsWith("https://")) {
+                    item = "https://" + item;
+                }
+            });
+            // 把每一个img都parse为url
+            img.forEach(item -> {
+                try {
+                    URL url = new URL(item);
+                    if (url.getHost().contains("example.com") || url.getHost().contains("localhost") || url.getHost().contains("127.0.0.1")) {
+                        img.remove(item);
+                    }
+                } catch (Exception e) {
+                    img.remove(item);
+                }
+            });
+        }
+
+        return img;
+    }
+
+    /**
+     * 对transform的修正
+     * 1.如果example中的音频数据为空 会自动通过sentence导入数据内容
+     */
+    public static List<WordTransform> fixTransform(List<WordTransform> transform) {
+
+        transform.forEach(item -> {
+            WordExample example = item.getExample();
+
+            if (StrUtil.isBlankIfStr(example.getSentence()) ) return;
+
+            example.setAudio(fixPronounce(example.getAudio(), example.getSentence()));
+        });
+
+        return transform;
+    }
+
+    /**
+     * 对translation的修正
+     * 1.如果example中的音频数据为空 会自动通过sentence导入数据内容
+     */
+    public static List<WordTranslation> fixTranslation(List<WordTranslation> translation) {
+
+        translation.forEach(item -> {
+            WordExample example = item.getExample();
+
+            if (StrUtil.isBlankIfStr(example.getSentence()) ) return;
+
+            example.setAudio(fixPronounce(example.getAudio(), example.getSentence()));
+        });
+
+        return translation;
+    }
+
+    /**
+     * 对examplePhrases的修正
+     * 1.如果example中的音频数据为空 会自动通过sentence导入数据内容
+     */
+    public static List<WordExample> fixExamplePhrases(List<WordExample> examplePhrases) {
+
+        examplePhrases.forEach(item -> {
+            if (StrUtil.isBlankIfStr(item.getSentence()) ) return;
+
+            item.setAudio(fixPronounce(item.getAudio(), item.getSentence()));
+        });
+
+        return examplePhrases;
+    }
+
+    /**
+     * 对WordPronounce的修正 会自动根据传入的内容导入（首选audio.content 如果没有选择initialValue)
+     */
+    public static WordPronounce fixPronounce(WordPronounce pronounce, String initialValue) {
+        if (pronounce != null) {
+            if (pronounce.getAudio() == null || pronounce.getAudio().isEmpty()) {
+                // https://dict.youdao.com/dictvoice
+                String content = initialValue;
+                if (pronounce.getContent() != null) {
+                    content = pronounce.getContent();
+                }
+                pronounce.setAudio("https://dict.youdao.com/dictvoice?audio=" + content.replace(" ", "+"));
+            }
+        }
+        return pronounce;
+    }
 }

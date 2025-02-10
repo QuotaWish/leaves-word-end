@@ -138,7 +138,7 @@ public class MediaCreatorServiceImpl extends ServiceImpl<MediaCreatorMapper, Med
     @SneakyThrows
     @Override
     public SseEmitter startWorkFlow(@NotNull MediaType media_type, Long word_id, Long creator) {
-        Long startTime = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
         EnglishWord word = englishWordService.getById(word_id);
         ThrowUtils.throwIf(word == null || word.getWord_head() == null, ErrorCode.NOT_FOUND_ERROR);
 
