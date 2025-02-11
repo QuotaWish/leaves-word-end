@@ -65,6 +65,8 @@ public class EnglishDictionary implements Serializable {
      */
     private Date update_time;
 
+    private int total_words, published_words, approved_words;
+
     /**
      * 是否删除
      */

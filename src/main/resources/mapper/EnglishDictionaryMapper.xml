@@ -15,11 +15,14 @@
             <result property="publisher" column="publisher" />
             <result property="create_time" column="create_time" />
             <result property="update_time" column="update_time" />
+            <result property="total_words" column="total_words" />
+            <result property="approved_words" column="approved_words" />
+            <result property="published_words" column="published_words" />
             <result property="is_delete" column="is_delete" />
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,name,description,image_url,author,isbn,
+        id,name,description,image_url,author,isbn,english_dictionary.total_words,english_dictionary.approved_words,english_dictionary.published_words,
         publication_date,publisher,create_time,update_time,is_delete
     </sql>
 </mapper>
