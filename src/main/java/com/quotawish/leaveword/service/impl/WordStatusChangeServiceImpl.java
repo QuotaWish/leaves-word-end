@@ -54,7 +54,7 @@ public class WordStatusChangeServiceImpl extends ServiceImpl<WordStatusChangeMap
         int current = englishWordStatusChangeQueryRequest.getCurrent();
         int size = englishWordStatusChangeQueryRequest.getPageSize();
 
-        MPJLambdaWrapper<WordStatusChangeVO> mpjLambdaWrapper = new MPJLambdaWrapper<WordStatusChangeVO>()
+        MPJLambdaWrapper<WordStatusChange> mpjLambdaWrapper = new MPJLambdaWrapper<WordStatusChange>()
                         .selectAll(WordStatusChange.class)
                         .select(EnglishWord::getWord_head, EnglishWord::getStatus)
                                 .selectAs(EnglishWord::getWord_head, WordStatusChangeVO::getWord_head)
@@ -72,7 +72,9 @@ public class WordStatusChangeServiceImpl extends ServiceImpl<WordStatusChangeMap
             mpjLambdaWrapper.orderByDesc(WordStatusChange::getCreateTime, WordStatusChange::getUpdateTime);
         }
 
-        return (Page<WordStatusChangeVO>) baseMapper.selectJoinPage(new Page<WordStatusChangeVO>(current, size), WordStatusChangeVO.class, mpjLambdaWrapper);
+        Page<WordStatusChangeVO> wordStatusChangeVOPage = new Page<>(current, size);
+
+        return baseMapper.selectJoinPage(wordStatusChangeVOPage, WordStatusChangeVO.class, mpjLambdaWrapper);
     }
 
 }

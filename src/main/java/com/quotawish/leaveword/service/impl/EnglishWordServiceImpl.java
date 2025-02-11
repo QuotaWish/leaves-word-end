@@ -108,11 +108,11 @@ public class EnglishWordServiceImpl extends ServiceImpl<EnglishWordMapper, Engli
         String sortField = request.getSortField();
         String sortOrder = request.getSortOrder();
 
-        MPJLambdaWrapper<DictionaryWordWithWordVO> wrapper = new MPJLambdaWrapper<DictionaryWordWithWordVO>()
+        MPJLambdaWrapper<DictionaryWord> wrapper = new MPJLambdaWrapper<DictionaryWord>()
                 .selectAll(DictionaryWord.class)
                 .selectAll(EnglishWord.class)
+                .selectAssociation(EnglishWord.class, DictionaryWordWithWordVO::getWord)
                 .leftJoin(EnglishWord.class, EnglishWord::getId, DictionaryWord::getWord_id)
-//                .selectAs(EnglishWord.class, DictionaryWordWithWordVO::getWord)
                 .eq(DictionaryWord::getDictionary_id, request.getDict_id())
                 ;
 
@@ -130,7 +130,16 @@ public class EnglishWordServiceImpl extends ServiceImpl<EnglishWordMapper, Engli
         wrapper.orderBy(SqlUtils.validSortField(sortField),
                 sortOrder.equals(CommonConstant.SORT_ORDER_ASC), DictionaryWord::getCreated_at);
 
-        IPage<DictionaryWordWithWordVO> dictionaryWordWithWordVOIPage = dwMapper.selectJoinPage(new Page<>(request.getCurrent(), request.getPageSize()), DictionaryWordWithWordVO.class, wrapper);
+        Page<DictionaryWordWithWordVO> objectPage = new Page<>(request.getCurrent(), request.getPageSize());
+
+        IPage<DictionaryWordWithWordVO> dictionaryWordWithWordVOIPage = dwMapper.selectJoinPage(objectPage, DictionaryWordWithWordVO.class, wrapper);
+
+        // 手动映射 EnglishWord 到 DictionaryWordWithWordVO 的 word 字段
+//        List<DictionaryWordWithWordVO> records = dictionaryWordWithWordVOIPage.getRecords();
+//        for (DictionaryWordWithWordVO vo : records) {
+//            EnglishWord englishWord = new EnglishWord(); // 假设这里是从数据库查询出来的
+//            vo.setWord(englishWord); // 设置 word 字段
+//        }
 
         return dictionaryWordWithWordVOIPage;
     }
