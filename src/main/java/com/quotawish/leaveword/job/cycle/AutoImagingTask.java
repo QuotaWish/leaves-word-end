@@ -56,7 +56,7 @@ public class AutoImagingTask extends WordProcessor<WorkflowEvent> {
     }
 
     @Async
-    @Scheduled(fixedDelay = 15 * 1000)
+    @Scheduled(fixedDelay = 5 * 1000)
     public void execute() {
         startProcess(WordStatus.STRUCTURED.name(), WordStatus.IMAGING.name(), "AI_AUTO_IMAGING", cozeManager.getConfig().getWorkflowId());
     }

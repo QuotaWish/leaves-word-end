@@ -46,7 +46,7 @@ public class AutoStructureTask extends WordProcessor<WorkflowEvent> {
     }
 
     @Async
-    @Scheduled(fixedDelay = 10000)
+    @Scheduled(fixedDelay = 1000)
     public void execute() {
         startProcess(WordStatus.SUPPLIED.name(), WordStatus.STRUCTURE_FIXING.name(), "AI_AUTO_STRUCT_FIXING", null);
     }
