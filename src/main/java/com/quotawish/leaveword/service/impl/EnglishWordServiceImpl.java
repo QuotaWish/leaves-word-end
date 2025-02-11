@@ -279,6 +279,9 @@ public class EnglishWordServiceImpl extends ServiceImpl<EnglishWordMapper, Engli
 
         byId.setManual_score(score);
         byId.setReviewer(user);
+        byId.setStatus(WordStatus.WAIT_FOR_AI_REVIEW.name());
+
+        updateById(byId);
     }
 
     @Override

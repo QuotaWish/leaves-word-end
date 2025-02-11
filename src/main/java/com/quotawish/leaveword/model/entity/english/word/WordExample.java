@@ -39,15 +39,21 @@ public class WordExample {
      * 例句类型枚举类型。
      */
     public enum WordExampleType {
-        SENTENCE("句子", "完整的句子"),
-        PHRASE("短语", "句子的一部分");
+        SENTENCE("SENTENCE", "句子", "完整的句子"),
+        PHRASE("PHRASE", "短语", "句子的一部分");
 
+        private final String key;
         private final String name;
         private final String description;
 
-        WordExampleType(String name, String description) {
+        WordExampleType(String key, String name, String description) {
+            this.key = key;
             this.name = name;
             this.description = description;
+        }
+
+        public String getKey() {
+            return key;
         }
 
         public String getName() {
@@ -60,7 +66,7 @@ public class WordExample {
 
         @Override
         public String toString() {
-            return name;
+            return this.key;
         }
     }
 }

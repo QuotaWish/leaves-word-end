@@ -10,7 +10,6 @@ public enum WordStatus {
     UNKNOWN("未知"),
     DRAFT("草稿"),
     CREATED("已创建"),
-    UPLOADED("已上传"),
     PROCESSING("处理中"),
     SUPPLYING("扩充中"),
     SUPPLIED("已扩充"),
@@ -18,7 +17,7 @@ public enum WordStatus {
     STRUCTURED("已结构化"),
     IMAGING("生成图片中"),
     PROCESSED("已处理"),
-    WAIT_FOR_MANUAL_REVIEW("等待审核"),
+    WAIT_FOR_AI_REVIEW("等待审核"),
 
     REVIEWING("审核中"),
     DATA_FORMAT_ERROR("数据格式校验不通过"),
@@ -28,6 +27,7 @@ public enum WordStatus {
     UNPUBLISHED("未发布"),
 
     APPROVED("已审核通过"),
+    UPLOADED("已上传"),
     UPLOADING("上传中"),
     IMPORTING("导入中"),
     EXPORTING("导出中"),

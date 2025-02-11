@@ -32,7 +32,7 @@ public class AutoRateTask extends WordProcessor<ChatEvent> {
     @Async
     @Scheduled(fixedDelay = 45 * 1000)
     public void execute() {
-        startProcess(WordStatus.WAIT_FOR_MANUAL_REVIEW.name(), WordStatus.REVIEWING.name(), "AI_AUTO_RATE", cozeManager.getConfig().getValidateId());
+        startProcess(WordStatus.WAIT_FOR_AI_REVIEW.name(), WordStatus.REVIEWING.name(), "AI_AUTO_RATE", cozeManager.getConfig().getValidateId());
     }
 
     @Override
@@ -48,7 +48,7 @@ public class AutoRateTask extends WordProcessor<ChatEvent> {
                 try {
                     JSONObject json = JSONUtil.parseObj(totalInfo);
                     int score = json.getInt("score", 0);
-                    word.setStatus(score < 75 ? WordStatus.REJECTED.name() : WordStatus.UPLOADED.name());
+//                    word.setStatus(score < 75 ? WordStatus.REJECTED.name() : WordStatus.UPLOADED.name());
                     word.setAi_score(score);
                 } catch (Exception e) {
                     log.error("Error processing word: {}", word.getWord_head(), e);

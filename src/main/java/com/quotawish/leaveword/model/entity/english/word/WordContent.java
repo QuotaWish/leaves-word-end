@@ -5,6 +5,7 @@ import lombok.Data;
 import org.springframework.beans.BeanUtils;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -96,27 +97,28 @@ public class WordContent {
      * 3.如果图片的hostname合法 但是没有https协议 会自动加上
      */
     public static List<String> fixImg(List<String> img) {
+        List<String> newImg = new ArrayList<>(img);
         if (img != null) {
-            img.removeIf(item -> item == null || !item.startsWith("https://") || !item.contains("."));
-            img.forEach(item -> {
-                if (!item.startsWith("https://")) {
-                    item = "https://" + item;
-                }
-            });
+            newImg.removeIf(item -> item == null || !item.startsWith("https://") || !item.contains("."));
+//            img.forEach(item -> {
+//                if (!item.startsWith("https://")) {
+//                    item = "https://" + item;
+//                }
+//            });
             // 把每一个img都parse为url
             img.forEach(item -> {
                 try {
                     URL url = new URL(item);
                     if (url.getHost().contains("example.com") || url.getHost().contains("localhost") || url.getHost().contains("127.0.0.1")) {
-                        img.remove(item);
+                        newImg.remove(item);
                     }
                 } catch (Exception e) {
-                    img.remove(item);
+                    newImg.remove(item);
                 }
             });
         }
 
-        return img;
+        return newImg;
     }
 
     /**
@@ -155,11 +157,17 @@ public class WordContent {
 
     /**
      * 对examplePhrases的修正
-     * 1.如果example中的音频数据为空 会自动通过sentence导入数据内容
+     * 1. 如果example中的音频数据为空 会自动通过sentence导入数据内容
+     * 2. 如果某一个example的type不是PHRASE会自动修正
      */
     public static List<WordExample> fixExamplePhrases(List<WordExample> examplePhrases) {
 
         examplePhrases.forEach(item -> {
+            WordExample.WordExampleType type = item.getType();
+            if (type != WordExample.WordExampleType.PHRASE) {
+                item.setType(WordExample.WordExampleType.PHRASE);
+            }
+
             if (StrUtil.isBlankIfStr(item.getSentence()) ) return;
 
             item.setAudio(fixPronounce(item.getAudio(), item.getSentence()));

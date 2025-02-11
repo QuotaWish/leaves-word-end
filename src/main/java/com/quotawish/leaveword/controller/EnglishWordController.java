@@ -148,7 +148,7 @@ public class EnglishWordController {
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "正在审核中，请稍后再试");
         }
 
-        english_word.setStatus(english_wordUpdateRequest.isDraft() ? WordStatus.DRAFT.name() : WordStatus.PROCESSED.name());
+        english_word.setStatus(english_wordUpdateRequest.isDraft() ? WordStatus.DRAFT.name() : WordStatus.SUPPLIED.name());
 
         boolean result = english_wordService.updateById(english_word);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);

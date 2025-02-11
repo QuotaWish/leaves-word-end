@@ -55,19 +55,21 @@ public class AutoStructureTask extends WordProcessor<WorkflowEvent> {
     protected void processing(String comment, String botId, EnglishWord word, WordStatusChange change, JSONObject jsonObject, String timerKey) {
         // 判断单词数据是否正确
         String info = word.getInfo();
+        WordContent wordContent;
 
         try {
             if (!EnglishWord.isStandardFormat(info)) {
                 throw new Exception("INVALID_FORMAT");
             }
+
+            wordContent = word.transformInfo();
+
         } catch ( Exception e ) {
-            log.error("Error structure fixing word(auto status): {} - {}", word.getWord_head(), e.getMessage());
+            log.error("Error structure fixing word(auto status or parse): {} - {}", word.getWord_head(), e.getMessage());
             word.setStatus(WordStatus.DATA_FORMAT_ERROR.name());
             onMessageCompleted(comment, -1, word, change, jsonObject, timerKey);
             return;
         }
-
-        WordContent wordContent = word.transformInfo();
 
         if (wordContent == null) {
             log.error("Error processing word: {} - {}", word.getWord_head(), "INVALID_FORMAT");

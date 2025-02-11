@@ -72,7 +72,6 @@ public class AutoImagingTask extends WordProcessor<WorkflowEvent> {
         if (!EnglishWord.isStandardFormat(info)) {
             log.error("Error processing word: {} - {}", word.getWord_head(), "INVALID_FORMAT");
             word.setStatus(WordStatus.FAILED.name());
-            wordStatusChangeService.save(change);
             onMessageCompleted(comment, -1, word, change, jsonObject, timerKey);
             return;
         }
@@ -83,7 +82,13 @@ public class AutoImagingTask extends WordProcessor<WorkflowEvent> {
         if (img == null) {
             log.error("Error processing word: {} - {}", word.getWord_head(), "NO_IMG_FIELD_PROP");
             word.setStatus(WordStatus.FAILED.name());
-            wordStatusChangeService.save(change);
+            onMessageCompleted(comment, -1, word, change, jsonObject, timerKey);
+            return;
+        }
+
+        // 如果已经有图片 直接跳过 - 因为这个流程必定会经过结构化 非法图片都被去除了
+        if (!img.isEmpty()) {
+            word.setStatus(WordStatus.PROCESSED.name());
             onMessageCompleted(comment, -1, word, change, jsonObject, timerKey);
             return;
         }
