@@ -251,4 +251,13 @@ public class EnglishWordController {
 
         return ResultUtils.success(english_wordService.getEnglishWordAutoScore(id));
     }
+
+    @GetMapping("/detail")
+    @ApiOperation(value = "根据单词获取单词数据详情", notes = "非登录状态获取的数据不完整，登录后每位用户限制频繁查询。（TODO）")
+    public BaseResponse<EnglishWord> getEnglishWordDetail(@RequestParam("word") String word, HttpServletRequest request) {
+        EnglishWord english_word = english_wordService.getOne(new QueryWrapper<EnglishWord>().eq("word_head", word));
+        ThrowUtils.throwIf(english_word == null, ErrorCode.NOT_FOUND_ERROR);
+
+        return ResultUtils.success(english_word);
+    }
 }
