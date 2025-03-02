@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.quotawish.leaveword.mapper.ExamQuestionMapper">
+  <resultMap id="BaseResultMap" type="com.quotawish.leaveword.model.entity.ExamQuestion">
+    <!--@mbg.generated-->
+    <!--@Table exam_question-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="question_text" jdbcType="LONGVARCHAR" property="questionText" />
+    <result column="question_type" jdbcType="OTHER" property="questionType" />
+    <result column="options" jdbcType="LONGVARCHAR" property="options" />
+    <result column="answer" jdbcType="LONGVARCHAR" property="answer" />
+    <result column="explanation" jdbcType="LONGVARCHAR" property="explanation" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, question_text, question_type, `options`, answer, explanation, created_at, updated_at
+  </sql>
+  <update id="updateBatch" parameterType="java.util.List">
+    <!--@mbg.generated-->
+    update exam_question
+    <trim prefix="set" suffixOverrides=",">
+      <trim prefix="question_text = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.questionText,jdbcType=LONGVARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="question_type = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.questionType,jdbcType=OTHER}
+        </foreach>
+      </trim>
+      <trim prefix="`options` = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.options,jdbcType=LONGVARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="answer = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.answer,jdbcType=LONGVARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="explanation = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.explanation,jdbcType=LONGVARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="created_at = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.createdAt,jdbcType=TIMESTAMP}
+        </foreach>
+      </trim>
+      <trim prefix="updated_at = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.updatedAt,jdbcType=TIMESTAMP}
+        </foreach>
+      </trim>
+    </trim>
+    where id in
+    <foreach close=")" collection="list" item="item" open="(" separator=", ">
+      #{item.id,jdbcType=INTEGER}
+    </foreach>
+  </update>
+  <update id="updateBatchSelective" parameterType="java.util.List">
+    <!--@mbg.generated-->
+    update exam_question
+    <trim prefix="set" suffixOverrides=",">
+      <trim prefix="question_text = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.questionText != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.questionText,jdbcType=LONGVARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="question_type = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.questionType != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.questionType,jdbcType=OTHER}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="`options` = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.options != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.options,jdbcType=LONGVARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="answer = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.answer != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.answer,jdbcType=LONGVARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="explanation = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.explanation != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.explanation,jdbcType=LONGVARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="created_at = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.createdAt != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.createdAt,jdbcType=TIMESTAMP}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="updated_at = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.updatedAt != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.updatedAt,jdbcType=TIMESTAMP}
+          </if>
+        </foreach>
+      </trim>
+    </trim>
+    where id in
+    <foreach close=")" collection="list" item="item" open="(" separator=", ">
+      #{item.id,jdbcType=INTEGER}
+    </foreach>
+  </update>
+  <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into exam_question
+    (question_text, question_type, `options`, answer, explanation, created_at, updated_at
+      )
+    values
+    <foreach collection="list" item="item" separator=",">
+      (#{item.questionText,jdbcType=LONGVARCHAR}, #{item.questionType,jdbcType=OTHER}, 
+        #{item.options,jdbcType=LONGVARCHAR}, #{item.answer,jdbcType=LONGVARCHAR}, #{item.explanation,jdbcType=LONGVARCHAR}, 
+        #{item.createdAt,jdbcType=TIMESTAMP}, #{item.updatedAt,jdbcType=TIMESTAMP})
+    </foreach>
+  </insert>
+  <delete id="deleteByPrimaryKeyIn">
+    <!--@mbg.generated-->
+    delete from exam_question where id in 
+    <foreach close=")" collection="list" item="id" open="(" separator=", ">
+      #{id,jdbcType=INTEGER}
+    </foreach>
+  </delete>
+  <insert id="insertOnDuplicateUpdate" keyColumn="id" keyProperty="id" parameterType="com.quotawish.leaveword.model.entity.ExamQuestion" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into exam_question
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      question_text,
+      question_type,
+      `options`,
+      answer,
+      explanation,
+      created_at,
+      updated_at,
+    </trim>
+    values
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      #{questionText,jdbcType=LONGVARCHAR},
+      #{questionType,jdbcType=OTHER},
+      #{options,jdbcType=LONGVARCHAR},
+      #{answer,jdbcType=LONGVARCHAR},
+      #{explanation,jdbcType=LONGVARCHAR},
+      #{createdAt,jdbcType=TIMESTAMP},
+      #{updatedAt,jdbcType=TIMESTAMP},
+    </trim>
+    on duplicate key update 
+    <trim suffixOverrides=",">
+      <if test="id != null">
+        id = #{id,jdbcType=INTEGER},
+      </if>
+      question_text = #{questionText,jdbcType=LONGVARCHAR},
+      question_type = #{questionType,jdbcType=OTHER},
+      `options` = #{options,jdbcType=LONGVARCHAR},
+      answer = #{answer,jdbcType=LONGVARCHAR},
+      explanation = #{explanation,jdbcType=LONGVARCHAR},
+      created_at = #{createdAt,jdbcType=TIMESTAMP},
+      updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+    </trim>
+  </insert>
+  <insert id="insertOnDuplicateUpdateSelective" keyColumn="id" keyProperty="id" parameterType="com.quotawish.leaveword.model.entity.ExamQuestion" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into exam_question
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="questionText != null">
+        question_text,
+      </if>
+      <if test="questionType != null">
+        question_type,
+      </if>
+      <if test="options != null">
+        `options`,
+      </if>
+      <if test="answer != null">
+        answer,
+      </if>
+      <if test="explanation != null">
+        explanation,
+      </if>
+      <if test="createdAt != null">
+        created_at,
+      </if>
+      <if test="updatedAt != null">
+        updated_at,
+      </if>
+    </trim>
+    values
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="questionText != null">
+        #{questionText,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="questionType != null">
+        #{questionType,jdbcType=OTHER},
+      </if>
+      <if test="options != null">
+        #{options,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="answer != null">
+        #{answer,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="explanation != null">
+        #{explanation,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="createdAt != null">
+        #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+        #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+    on duplicate key update 
+    <trim suffixOverrides=",">
+      <if test="id != null">
+        id = #{id,jdbcType=INTEGER},
+      </if>
+      <if test="questionText != null">
+        question_text = #{questionText,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="questionType != null">
+        question_type = #{questionType,jdbcType=OTHER},
+      </if>
+      <if test="options != null">
+        `options` = #{options,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="answer != null">
+        answer = #{answer,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="explanation != null">
+        explanation = #{explanation,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="createdAt != null">
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+        updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+</mapper>

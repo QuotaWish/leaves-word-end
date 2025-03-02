@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.quotawish.leaveword.mapper.ExamOperationLogMapper">
+  <resultMap id="BaseResultMap" type="com.quotawish.leaveword.model.entity.ExamOperationLog">
+    <!--@mbg.generated-->
+    <!--@Table exam_operation_log-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="table_name" jdbcType="VARCHAR" property="tableName" />
+    <result column="record_id" jdbcType="INTEGER" property="recordId" />
+    <result column="action" jdbcType="OTHER" property="action" />
+    <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
+    <result column="operation_time" jdbcType="TIMESTAMP" property="operationTime" />
+    <result column="ip_address" jdbcType="VARCHAR" property="ipAddress" />
+    <result column="description" jdbcType="LONGVARCHAR" property="description" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, `table_name`, record_id, `action`, operator_id, operation_time, ip_address, description
+  </sql>
+  <update id="updateBatch" parameterType="java.util.List">
+    <!--@mbg.generated-->
+    update exam_operation_log
+    <trim prefix="set" suffixOverrides=",">
+      <trim prefix="`table_name` = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.tableName,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="record_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.recordId,jdbcType=INTEGER}
+        </foreach>
+      </trim>
+      <trim prefix="`action` = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.action,jdbcType=OTHER}
+        </foreach>
+      </trim>
+      <trim prefix="operator_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.operatorId,jdbcType=INTEGER}
+        </foreach>
+      </trim>
+      <trim prefix="operation_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.operationTime,jdbcType=TIMESTAMP}
+        </foreach>
+      </trim>
+      <trim prefix="ip_address = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.ipAddress,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="description = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.description,jdbcType=LONGVARCHAR}
+        </foreach>
+      </trim>
+    </trim>
+    where id in
+    <foreach close=")" collection="list" item="item" open="(" separator=", ">
+      #{item.id,jdbcType=INTEGER}
+    </foreach>
+  </update>
+  <update id="updateBatchSelective" parameterType="java.util.List">
+    <!--@mbg.generated-->
+    update exam_operation_log
+    <trim prefix="set" suffixOverrides=",">
+      <trim prefix="`table_name` = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.tableName != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.tableName,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="record_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.recordId != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.recordId,jdbcType=INTEGER}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="`action` = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.action != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.action,jdbcType=OTHER}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="operator_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.operatorId != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.operatorId,jdbcType=INTEGER}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="operation_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.operationTime != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.operationTime,jdbcType=TIMESTAMP}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="ip_address = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.ipAddress != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.ipAddress,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="description = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.description != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.description,jdbcType=LONGVARCHAR}
+          </if>
+        </foreach>
+      </trim>
+    </trim>
+    where id in
+    <foreach close=")" collection="list" item="item" open="(" separator=", ">
+      #{item.id,jdbcType=INTEGER}
+    </foreach>
+  </update>
+  <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into exam_operation_log
+    (`table_name`, record_id, `action`, operator_id, operation_time, ip_address, description
+      )
+    values
+    <foreach collection="list" item="item" separator=",">
+      (#{item.tableName,jdbcType=VARCHAR}, #{item.recordId,jdbcType=INTEGER}, #{item.action,jdbcType=OTHER}, 
+        #{item.operatorId,jdbcType=INTEGER}, #{item.operationTime,jdbcType=TIMESTAMP}, 
+        #{item.ipAddress,jdbcType=VARCHAR}, #{item.description,jdbcType=LONGVARCHAR})
+    </foreach>
+  </insert>
+  <delete id="deleteByPrimaryKeyIn">
+    <!--@mbg.generated-->
+    delete from exam_operation_log where id in 
+    <foreach close=")" collection="list" item="id" open="(" separator=", ">
+      #{id,jdbcType=INTEGER}
+    </foreach>
+  </delete>
+  <insert id="insertOnDuplicateUpdate" keyColumn="id" keyProperty="id" parameterType="com.quotawish.leaveword.model.entity.ExamOperationLog" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into exam_operation_log
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      `table_name`,
+      record_id,
+      `action`,
+      operator_id,
+      operation_time,
+      ip_address,
+      description,
+    </trim>
+    values
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      #{tableName,jdbcType=VARCHAR},
+      #{recordId,jdbcType=INTEGER},
+      #{action,jdbcType=OTHER},
+      #{operatorId,jdbcType=INTEGER},
+      #{operationTime,jdbcType=TIMESTAMP},
+      #{ipAddress,jdbcType=VARCHAR},
+      #{description,jdbcType=LONGVARCHAR},
+    </trim>
+    on duplicate key update 
+    <trim suffixOverrides=",">
+      <if test="id != null">
+        id = #{id,jdbcType=INTEGER},
+      </if>
+      `table_name` = #{tableName,jdbcType=VARCHAR},
+      record_id = #{recordId,jdbcType=INTEGER},
+      `action` = #{action,jdbcType=OTHER},
+      operator_id = #{operatorId,jdbcType=INTEGER},
+      operation_time = #{operationTime,jdbcType=TIMESTAMP},
+      ip_address = #{ipAddress,jdbcType=VARCHAR},
+      description = #{description,jdbcType=LONGVARCHAR},
+    </trim>
+  </insert>
+  <insert id="insertOnDuplicateUpdateSelective" keyColumn="id" keyProperty="id" parameterType="com.quotawish.leaveword.model.entity.ExamOperationLog" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into exam_operation_log
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="tableName != null">
+        `table_name`,
+      </if>
+      <if test="recordId != null">
+        record_id,
+      </if>
+      <if test="action != null">
+        `action`,
+      </if>
+      <if test="operatorId != null">
+        operator_id,
+      </if>
+      <if test="operationTime != null">
+        operation_time,
+      </if>
+      <if test="ipAddress != null">
+        ip_address,
+      </if>
+      <if test="description != null">
+        description,
+      </if>
+    </trim>
+    values
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="tableName != null">
+        #{tableName,jdbcType=VARCHAR},
+      </if>
+      <if test="recordId != null">
+        #{recordId,jdbcType=INTEGER},
+      </if>
+      <if test="action != null">
+        #{action,jdbcType=OTHER},
+      </if>
+      <if test="operatorId != null">
+        #{operatorId,jdbcType=INTEGER},
+      </if>
+      <if test="operationTime != null">
+        #{operationTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="ipAddress != null">
+        #{ipAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+    on duplicate key update 
+    <trim suffixOverrides=",">
+      <if test="id != null">
+        id = #{id,jdbcType=INTEGER},
+      </if>
+      <if test="tableName != null">
+        `table_name` = #{tableName,jdbcType=VARCHAR},
+      </if>
+      <if test="recordId != null">
+        record_id = #{recordId,jdbcType=INTEGER},
+      </if>
+      <if test="action != null">
+        `action` = #{action,jdbcType=OTHER},
+      </if>
+      <if test="operatorId != null">
+        operator_id = #{operatorId,jdbcType=INTEGER},
+      </if>
+      <if test="operationTime != null">
+        operation_time = #{operationTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="ipAddress != null">
+        ip_address = #{ipAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        description = #{description,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+</mapper>

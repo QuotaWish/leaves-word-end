@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.quotawish.leaveword.mapper.ExamPaperStatsMapper">
+  <resultMap id="BaseResultMap" type="com.quotawish.leaveword.model.entity.ExamPaperStats">
+    <!--@mbg.generated-->
+    <!--@Table exam_paper_stats-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="paper_id" jdbcType="INTEGER" property="paperId" />
+    <result column="view_count" jdbcType="INTEGER" property="viewCount" />
+    <result column="download_count" jdbcType="INTEGER" property="downloadCount" />
+    <result column="attempt_count" jdbcType="INTEGER" property="attemptCount" />
+    <result column="average_score" jdbcType="DECIMAL" property="averageScore" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, paper_id, view_count, download_count, attempt_count, average_score, updated_at
+  </sql>
+  <update id="updateBatch" parameterType="java.util.List">
+    <!--@mbg.generated-->
+    update exam_paper_stats
+    <trim prefix="set" suffixOverrides=",">
+      <trim prefix="paper_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.paperId,jdbcType=INTEGER}
+        </foreach>
+      </trim>
+      <trim prefix="view_count = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.viewCount,jdbcType=INTEGER}
+        </foreach>
+      </trim>
+      <trim prefix="download_count = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.downloadCount,jdbcType=INTEGER}
+        </foreach>
+      </trim>
+      <trim prefix="attempt_count = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.attemptCount,jdbcType=INTEGER}
+        </foreach>
+      </trim>
+      <trim prefix="average_score = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.averageScore,jdbcType=DECIMAL}
+        </foreach>
+      </trim>
+      <trim prefix="updated_at = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.updatedAt,jdbcType=TIMESTAMP}
+        </foreach>
+      </trim>
+    </trim>
+    where id in
+    <foreach close=")" collection="list" item="item" open="(" separator=", ">
+      #{item.id,jdbcType=INTEGER}
+    </foreach>
+  </update>
+  <update id="updateBatchSelective" parameterType="java.util.List">
+    <!--@mbg.generated-->
+    update exam_paper_stats
+    <trim prefix="set" suffixOverrides=",">
+      <trim prefix="paper_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.paperId != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.paperId,jdbcType=INTEGER}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="view_count = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.viewCount != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.viewCount,jdbcType=INTEGER}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="download_count = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.downloadCount != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.downloadCount,jdbcType=INTEGER}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="attempt_count = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.attemptCount != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.attemptCount,jdbcType=INTEGER}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="average_score = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.averageScore != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.averageScore,jdbcType=DECIMAL}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="updated_at = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.updatedAt != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.updatedAt,jdbcType=TIMESTAMP}
+          </if>
+        </foreach>
+      </trim>
+    </trim>
+    where id in
+    <foreach close=")" collection="list" item="item" open="(" separator=", ">
+      #{item.id,jdbcType=INTEGER}
+    </foreach>
+  </update>
+  <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into exam_paper_stats
+    (paper_id, view_count, download_count, attempt_count, average_score, updated_at)
+    values
+    <foreach collection="list" item="item" separator=",">
+      (#{item.paperId,jdbcType=INTEGER}, #{item.viewCount,jdbcType=INTEGER}, #{item.downloadCount,jdbcType=INTEGER}, 
+        #{item.attemptCount,jdbcType=INTEGER}, #{item.averageScore,jdbcType=DECIMAL}, #{item.updatedAt,jdbcType=TIMESTAMP}
+        )
+    </foreach>
+  </insert>
+  <delete id="deleteByPrimaryKeyIn">
+    <!--@mbg.generated-->
+    delete from exam_paper_stats where id in 
+    <foreach close=")" collection="list" item="id" open="(" separator=", ">
+      #{id,jdbcType=INTEGER}
+    </foreach>
+  </delete>
+  <insert id="insertOnDuplicateUpdate" keyColumn="id" keyProperty="id" parameterType="com.quotawish.leaveword.model.entity.ExamPaperStats" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into exam_paper_stats
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      paper_id,
+      view_count,
+      download_count,
+      attempt_count,
+      average_score,
+      updated_at,
+    </trim>
+    values
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      #{paperId,jdbcType=INTEGER},
+      #{viewCount,jdbcType=INTEGER},
+      #{downloadCount,jdbcType=INTEGER},
+      #{attemptCount,jdbcType=INTEGER},
+      #{averageScore,jdbcType=DECIMAL},
+      #{updatedAt,jdbcType=TIMESTAMP},
+    </trim>
+    on duplicate key update 
+    <trim suffixOverrides=",">
+      <if test="id != null">
+        id = #{id,jdbcType=INTEGER},
+      </if>
+      paper_id = #{paperId,jdbcType=INTEGER},
+      view_count = #{viewCount,jdbcType=INTEGER},
+      download_count = #{downloadCount,jdbcType=INTEGER},
+      attempt_count = #{attemptCount,jdbcType=INTEGER},
+      average_score = #{averageScore,jdbcType=DECIMAL},
+      updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+    </trim>
+  </insert>
+  <insert id="insertOnDuplicateUpdateSelective" keyColumn="id" keyProperty="id" parameterType="com.quotawish.leaveword.model.entity.ExamPaperStats" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into exam_paper_stats
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="paperId != null">
+        paper_id,
+      </if>
+      <if test="viewCount != null">
+        view_count,
+      </if>
+      <if test="downloadCount != null">
+        download_count,
+      </if>
+      <if test="attemptCount != null">
+        attempt_count,
+      </if>
+      <if test="averageScore != null">
+        average_score,
+      </if>
+      <if test="updatedAt != null">
+        updated_at,
+      </if>
+    </trim>
+    values
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="paperId != null">
+        #{paperId,jdbcType=INTEGER},
+      </if>
+      <if test="viewCount != null">
+        #{viewCount,jdbcType=INTEGER},
+      </if>
+      <if test="downloadCount != null">
+        #{downloadCount,jdbcType=INTEGER},
+      </if>
+      <if test="attemptCount != null">
+        #{attemptCount,jdbcType=INTEGER},
+      </if>
+      <if test="averageScore != null">
+        #{averageScore,jdbcType=DECIMAL},
+      </if>
+      <if test="updatedAt != null">
+        #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+    on duplicate key update 
+    <trim suffixOverrides=",">
+      <if test="id != null">
+        id = #{id,jdbcType=INTEGER},
+      </if>
+      <if test="paperId != null">
+        paper_id = #{paperId,jdbcType=INTEGER},
+      </if>
+      <if test="viewCount != null">
+        view_count = #{viewCount,jdbcType=INTEGER},
+      </if>
+      <if test="downloadCount != null">
+        download_count = #{downloadCount,jdbcType=INTEGER},
+      </if>
+      <if test="attemptCount != null">
+        attempt_count = #{attemptCount,jdbcType=INTEGER},
+      </if>
+      <if test="averageScore != null">
+        average_score = #{averageScore,jdbcType=DECIMAL},
+      </if>
+      <if test="updatedAt != null">
+        updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+</mapper>
