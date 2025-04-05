@@ -1,6 +1,6 @@
 package com.quotawish.leaveword.controller;
 import com.quotawish.leaveword.model.entity.ExamQuestion;
-import com.quotawish.leaveword.service.impl.ExamQuestionServiceImpl;
+import com.quotawish.leaveword.service.impl.ExamQuestionImpl;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ public class ExamQuestionController {
 * 服务对象
 */
     @Autowired
-    private ExamQuestionServiceImpl examQuestionServiceImpl;
+    private ExamQuestionImpl examQuestionServiceImpl;
 
     /**
     * 通过主键查询单条数据
@@ -27,7 +27,7 @@ public class ExamQuestionController {
     */
     @GetMapping("selectOne")
     public ExamQuestion selectOne(Integer id) {
-    return examQuestionServiceImpl.selectByPrimaryKey(id);
+    return examQuestionServiceImpl.getById(id);
     }
 
 }

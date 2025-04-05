@@ -18,9 +18,9 @@ spring:
   # 数据库配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/leave_word
-    username: leave_word
-    password: iSSy8nJDBkawY7Zm
+    url: jdbc:mysql://localhost:3306/leaves-word
+    username: leaves-word
+    password: s82hJhNcMSB3aEHc
   # Redis 配置
   # todo 需替换配置，然后取消注释
 #  redis:
@@ -131,7 +131,7 @@ sa-token:
   # token 最低活跃频率（单位：秒），如果 token 超过此时间没有访问系统就会被冻结，默认-1 代表不限制，永不冻结
   active-timeout: 10080
   # 是否允许同一账号多地同时登录 （为 true 时允许一起登录, 为 false 时新登录挤掉旧登录）
-  is-concurrent: true
+  is-concurrent: false
   # 在多人登录同一账号时，是否共用一个 token （为 true 时所有登录共用一个 token, 为 false 时每次登录新建一个 token）
   is-share: false
   # token 风格（默认可取值：uuid、simple-uuid、random-32、random-64、random-128、tik）

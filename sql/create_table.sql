@@ -125,6 +125,9 @@ CREATE TABLE if not exists dictionary_word (
                                 FOREIGN KEY (word_id) REFERENCES english_word(id) ON DELETE CASCADE
 ) COMMENT='单词和词典关系表';
 
+alter table dictionary_word
+    add id bigint null;
+
 CREATE TABLE if not exists audio_file (
                             id BIGINT AUTO_INCREMENT PRIMARY KEY,
                             path VARCHAR(255),

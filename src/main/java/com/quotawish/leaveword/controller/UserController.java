@@ -1,5 +1,8 @@
 package com.quotawish.leaveword.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.stp.SaTokenInfo;
+import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.quotawish.leaveword.annotation.AuthCheck;
 import com.quotawish.leaveword.common.BaseResponse;
@@ -12,6 +15,7 @@ import com.quotawish.leaveword.exception.BusinessException;
 import com.quotawish.leaveword.exception.ThrowUtils;
 import com.quotawish.leaveword.model.dto.user.*;
 import com.quotawish.leaveword.model.entity.User;
+import com.quotawish.leaveword.model.vo.AuthUserVO;
 import com.quotawish.leaveword.model.vo.LoginUserVO;
 import com.quotawish.leaveword.model.vo.UserVO;
 import com.quotawish.leaveword.service.UserService;
@@ -21,6 +25,7 @@ import me.chanjar.weixin.common.bean.oauth2.WxOAuth2AccessToken;
 import me.chanjar.weixin.mp.api.WxMpService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.annotation.Version;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -88,7 +93,29 @@ public class UserController {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         LoginUserVO loginUserVO = userService.userLogin(userAccount, userPassword, request);
+
         return ResultUtils.success(loginUserVO);
+    }
+
+    @PostMapping("/login/token")
+    public BaseResponse<AuthUserVO> userLoginToken(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
+        if (userLoginRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        String userAccount = userLoginRequest.getUserAccount();
+        String userPassword = userLoginRequest.getUserPassword();
+        if (StringUtils.isAnyBlank(userAccount, userPassword)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        LoginUserVO loginUserVO = userService.userLogin(userAccount, userPassword, request);
+        SaTokenInfo token = StpUtil.getTokenInfo();
+
+        AuthUserVO authUser = new AuthUserVO();
+
+        authUser.setUser(loginUserVO);
+        authUser.setToken(token);
+
+        return ResultUtils.success(authUser);
     }
 
     /**
@@ -135,6 +162,7 @@ public class UserController {
      * @param request
      * @return
      */
+    @SaCheckLogin()
     @GetMapping("/get/login")
     public BaseResponse<LoginUserVO> getLoginUser(HttpServletRequest request) {
         User user = userService.getLoginUser(request);

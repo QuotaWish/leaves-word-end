@@ -1,6 +1,6 @@
 package com.quotawish.leaveword.controller;
 import com.quotawish.leaveword.model.entity.ExamPaperQuestion;
-import com.quotawish.leaveword.service.impl.ExamPaperQuestionServiceImpl;
+import com.quotawish.leaveword.service.impl.ExamPaperQuestionImpl;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ public class ExamPaperQuestionController {
 * 服务对象
 */
     @Autowired
-    private ExamPaperQuestionServiceImpl examPaperQuestionServiceImpl;
+    private ExamPaperQuestionImpl examPaperQuestionServiceImpl;
 
     /**
     * 通过主键查询单条数据
@@ -27,7 +27,7 @@ public class ExamPaperQuestionController {
     */
     @GetMapping("selectOne")
     public ExamPaperQuestion selectOne(Integer id) {
-    return examPaperQuestionServiceImpl.selectByPrimaryKey(id);
+    return examPaperQuestionServiceImpl.getById(id);
     }
 
 }

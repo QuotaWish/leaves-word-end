@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * 英语单词接口
@@ -84,7 +85,7 @@ public class EnglishWordController {
     @PostMapping("/get/batch")
     @ApiOperation("批量获取英语单词Id")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<Long[]> getEnglishWordBatch(@RequestBody @Validated EnglishWordGetBatchRequest batchReq, HttpServletRequest request) {
+    public BaseResponse<List<WordHeadIdDto>> getEnglishWordBatch(@RequestBody @Validated EnglishWordGetBatchRequest batchReq, HttpServletRequest request) {
 
         return ResultUtils.success(english_wordService.batchGetEnglishWordId(batchReq));
     }
@@ -108,19 +109,15 @@ public class EnglishWordController {
      * @return
      */
     @PostMapping("/delete")
-    public BaseResponse<Boolean> deleteEnglishWord(@RequestBody DeleteRequest deleteRequest, HttpServletRequest request) {
+    public BaseResponse<Boolean> deleteEnglishWord(@RequestBody DeleteRequest deleteRequest) {
         if (deleteRequest == null || deleteRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        User user = userService.getLoginUser(request);
         long id = deleteRequest.getId();
         // 判断是否存在
         EnglishWord oldEnglishWord = english_wordService.getById(id);
         ThrowUtils.throwIf(oldEnglishWord == null, ErrorCode.NOT_FOUND_ERROR);
-        // 仅本人或管理员可删除
-        if (!userService.isAdmin(request)) {
-            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
-        }
+
         // 操作数据库
         boolean result = english_wordService.removeById(id);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
@@ -259,5 +256,14 @@ public class EnglishWordController {
         ThrowUtils.throwIf(english_word == null, ErrorCode.NOT_FOUND_ERROR);
 
         return ResultUtils.success(english_word);
+    }
+
+    /**
+     * GET /api/words/duplicates
+     * 返回所有重复出现的 word_head 及其出现次数
+     */
+    @GetMapping("/duplicates")
+    public BaseResponse<List<DuplicateWordDto>> getDuplicateWords() {
+        return ResultUtils.success(english_wordService.findDuplicateWords());
     }
 }

@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -184,99 +185,114 @@ public class EnglishWordServiceImpl extends ServiceImpl<EnglishWordMapper, Engli
 
     @Override
     public int[] batchImportEnglishWord(EnglishWordAddBatchRequest request) {
-        Collection<EnglishWordAddRequest> words = request.getWords();
-
-        Stream<EnglishWord> englishWordStream = words.stream().map(word -> {
-            EnglishWord english_word = new EnglishWord();
-
-            english_word.setWord_head(word.getWord_head());
-            english_word.setInfo(word.getInfo());
-
-            if (english_word.getInfo() == null) {
-                english_word.setStatus(WordStatus.CREATED.name());
-                return english_word;
-            }
-
-            // 进行初步校验english word 符合指定格式标记一下
-            try {
-                boolean standardFormat = EnglishWord.isStandardFormat(word.getInfo());
-
-                if (standardFormat) {
-                    english_word.setStatus(WordStatus.PROCESSED.name());
-                } else {
-                    english_word.setStatus(WordStatus.DATA_FORMAT_ERROR.name());
-                }
-
-            } catch (Exception e) {
-                english_word.setStatus(WordStatus.UNKNOWN.name());
-            }
-
-            return english_word;
-        });
-
-// 把 englishWordStream 转成list
-        List<EnglishWord> englishWordList = englishWordStream.collect(Collectors.toList());
-
-// 使用分页查询来获取 existingWordHeads
-        int pageSize = 1000; // 每页大小
-        int totalWords = englishWordList.size();
-        Set<String> existingWordHeads = new HashSet<>();
-
-        for (int offset = 0; offset < totalWords; offset += pageSize) {
-            int limit = Math.min(pageSize, totalWords - offset);
-            List<String> batchWordHeads = englishWordList.stream()
-                    .skip(offset)
-                    .limit(limit)
-                    .map(EnglishWord::getWord_head)
-                    .collect(Collectors.toList());
-
-            List<String> existingBatchWordHeads = getBaseMapper().selectObjs(
-                    new QueryWrapper<EnglishWord>().select("word_head").in("word_head", batchWordHeads)
-            ).stream().map(Object::toString).collect(Collectors.toList());
-
-            existingWordHeads.addAll(existingBatchWordHeads);
+        Collection<EnglishWordAddRequest> reqWords = request.getWords();
+        if (reqWords == null || reqWords.isEmpty()) {
+            return new int[]{0, 0, 0};
         }
 
-        List<EnglishWord> filteredEnglishWordList = englishWordList.stream()
-                .filter(englishWord -> !existingWordHeads.contains(englishWord.getWord_head()))
+        // 1. 映射并去重输入：按 word_head 保留第一个
+        Map<String, EnglishWord> headToWord = reqWords.stream()
+                .filter(Objects::nonNull)
+                .map(wr -> {
+                    EnglishWord ew = new EnglishWord();
+                    ew.setWord_head(wr.getWord_head());
+                    ew.setInfo(wr.getInfo());
+                    // status 逻辑
+                    if (wr.getInfo() == null) {
+                        ew.setStatus(WordStatus.CREATED.name());
+                    } else {
+                        try {
+                            boolean ok = EnglishWord.isStandardFormat(wr.getInfo());
+                            ew.setStatus(ok
+                                    ? WordStatus.PROCESSED.name()
+                                    : WordStatus.DATA_FORMAT_ERROR.name());
+                        } catch (Exception ex) {
+                            ew.setStatus(WordStatus.UNKNOWN.name());
+                        }
+                    }
+                    return ew;
+                })
+                .filter(ew -> ew.getWord_head() != null && !ew.getWord_head().trim().isEmpty())
+                .collect(Collectors.toMap(
+                        EnglishWord::getWord_head,
+                        Function.identity(),
+                        (existing, next) -> existing,    // 保留第一个
+                        LinkedHashMap::new
+                ));
+
+        if (headToWord.isEmpty()) {
+            return new int[]{0, 0, 0};
+        }
+
+        // 2. 一次性查出所有已存在的 word_head
+        Set<String> allHeads = headToWord.keySet();
+        List<String> existList = getBaseMapper().selectObjs(
+                        new QueryWrapper<EnglishWord>()
+                                .select("word_head")
+                                .in("word_head", allHeads)
+                ).stream()
+                .map(Object::toString)
+                .collect(Collectors.toList());
+        Set<String> existSet = new HashSet<>(existList);
+
+        // 3. 过滤出真正需要插入的
+        List<EnglishWord> toInsert = headToWord.values().stream()
+                .filter(ew -> !existSet.contains(ew.getWord_head()))
                 .collect(Collectors.toList());
 
-        if (filteredEnglishWordList.isEmpty()) {
-            log.info("All words already exist in the database.");
-            return new int[] {0, existingWordHeads.size(), 0};
+        int existingCount = existSet.size();
+        if (toInsert.isEmpty()) {
+            log.info("All {} words already exist.", existingCount);
+            return new int[]{0, existingCount, 0};
         }
 
-// 使用批量插入时检查是否已经存在
-        List<EnglishWord> successfullyInsertedWords = new ArrayList<>();
-        List<EnglishWord> failedInsertedWords = new ArrayList<>();
+        // 4. 批量插入
+        // 如果是 Service 层，直接用 this.saveBatch；如果是 Mapper，调用 insertBatch
+        int batchSize = 500;
+        boolean ok = this.saveBatch(toInsert, batchSize);
+        int insertedCount = ok ? toInsert.size() : 0;
 
-        for (EnglishWord englishWord : filteredEnglishWordList) {
-            try {
-                getBaseMapper().insert(englishWord);
-                successfullyInsertedWords.add(englishWord);
-            } catch (DuplicateKeyException e) {
-                failedInsertedWords.add(englishWord);
-            }
-        }
-
-        int successfulInserts = successfullyInsertedWords.size();
-        int existingWords = existingWordHeads.size();
-        int failedInserts = failedInsertedWords.size();
-
-        log.info("Successfully inserted {} words.", successfulInserts);
-        log.info("Failed to insert {} words.", failedInserts);
-
-        return new int[] {successfulInserts, existingWords, failedInserts};
+        log.info("Successfully inserted {} words, {} skipped.", insertedCount, existingCount);
+        return new int[]{insertedCount, existingCount, 0};
 
     }
 
     @Override
-    public Long[] batchGetEnglishWordId(EnglishWordGetBatchRequest request) {
+    public List<WordHeadIdDto> batchGetEnglishWordId(EnglishWordGetBatchRequest request) {
         Collection<String> words = request.getWords();
+        if (words == null || words.isEmpty()) {
+            return Collections.emptyList();
+        }
 
-        return getBaseMapper().selectObjs(
-                new QueryWrapper<EnglishWord>().select("id").in("word_head", words)
-        ).stream().map(Object::toString).map(Long::parseLong).toArray(Long[]::new);
+        Set<String> uniqueWords = words.stream()
+                .filter(Objects::nonNull)
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toSet());
+
+        if (uniqueWords.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<EnglishWord> list = getBaseMapper().selectList(
+                new QueryWrapper<EnglishWord>()
+                        // 也可以改成 .distinct() 或者 .select("word_head", "MIN(id) AS id").groupBy("word_head")
+                        .select("word_head", "id")
+                        .in("word_head", uniqueWords)
+        );
+
+        Map<String, WordHeadIdDto> map = new LinkedHashMap<>();
+        for (EnglishWord e : list) {
+            String head = e.getWord_head();
+            // 如果想保留最小 id，可以改成：
+            // map.merge(head,
+            //     new WordHeadIdDto(head, e.getId()),
+            //     (existing, next) -> existing.getId() <= next.getId() ? existing : next
+            // );
+            map.putIfAbsent(head, new WordHeadIdDto(head, e.getId()));
+        }
+
+        return new ArrayList<>(map.values());
     }
 
     @Override
@@ -297,6 +313,23 @@ public class EnglishWordServiceImpl extends ServiceImpl<EnglishWordMapper, Engli
     public WordStatusChange getEnglishWordAutoScore(Long id) {
 
         return statusChangeService.getOne(new QueryWrapper<WordStatusChange>().eq("word_id", id).eq("COMMENT", "AI_AUTO_RATE").last("LIMIT 1"));
+    }
+
+    @Override
+    public List<DuplicateWordDto> findDuplicateWords() {
+        List<Map<String, Object>> maps = getBaseMapper().selectMaps(
+                new QueryWrapper<EnglishWord>()
+                        .select("word_head", "COUNT(*) AS cnt")
+                        .groupBy("word_head")
+                        .having("COUNT(*) > 1")
+        );
+
+        return maps.stream()
+                .map(m -> new DuplicateWordDto(
+                        (String) m.get("word_head"),
+                        ((Number) m.get("cnt")).longValue()
+                ))
+                .collect(Collectors.toList());
     }
 
 }

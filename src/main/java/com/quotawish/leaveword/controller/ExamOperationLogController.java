@@ -1,6 +1,6 @@
 package com.quotawish.leaveword.controller;
 import com.quotawish.leaveword.model.entity.ExamOperationLog;
-import com.quotawish.leaveword.service.impl.ExamOperationLogServiceImpl;
+import com.quotawish.leaveword.service.impl.ExamOperationLogImpl;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ public class ExamOperationLogController {
 * 服务对象
 */
     @Autowired
-    private ExamOperationLogServiceImpl examOperationLogServiceImpl;
+    private ExamOperationLogImpl examOperationLogServiceImpl;
 
     /**
     * 通过主键查询单条数据
@@ -27,7 +27,7 @@ public class ExamOperationLogController {
     */
     @GetMapping("selectOne")
     public ExamOperationLog selectOne(Integer id) {
-    return examOperationLogServiceImpl.selectByPrimaryKey(id);
+    return examOperationLogServiceImpl.getById(id);
     }
 
 }

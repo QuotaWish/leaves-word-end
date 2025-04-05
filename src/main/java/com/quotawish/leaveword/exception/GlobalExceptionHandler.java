@@ -1,5 +1,6 @@
 package com.quotawish.leaveword.exception;
 
+import cn.dev33.satoken.exception.SaTokenException;
 import com.quotawish.leaveword.common.BaseResponse;
 import com.quotawish.leaveword.common.ErrorCode;
 import com.quotawish.leaveword.common.ResultUtils;
@@ -28,6 +29,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BusinessException.class)
     public BaseResponse<?> businessExceptionHandler(BusinessException e) {
         log.error("BusinessException", e);
+        return ResultUtils.error(e.getCode(), e.getMessage());
+    }
+
+
+    @ExceptionHandler(SaTokenException.class)
+    public BaseResponse<?> saTokenExceptionHandler(SaTokenException e) {
+        log.error("SaTokenException", e);
         return ResultUtils.error(e.getCode(), e.getMessage());
     }
 
