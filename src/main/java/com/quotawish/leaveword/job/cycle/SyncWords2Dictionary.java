@@ -46,9 +46,9 @@ public class SyncWords2Dictionary {
 //    private EnglishWordService ewService;
 
     /**
-     * 每 8 小时执行一次同步
+     * 每 8 分钟执行一次同步
      */
-    @Scheduled(fixedRate = 8 * 60 * 60 * 1000)
+    @Scheduled(fixedRate = 8 * 60 * 1000)
     public void run() {
         log.info("start to sync words to dictionary");
 

@@ -118,6 +118,10 @@ public class EnglishWordController {
         EnglishWord oldEnglishWord = english_wordService.getById(id);
         ThrowUtils.throwIf(oldEnglishWord == null, ErrorCode.NOT_FOUND_ERROR);
 
+        if ( WordStatus.getEnumByValue(oldEnglishWord.getStatus()) == WordStatus.PUBLISHED) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "已发布的单词不允许删除");
+        }
+
         // 操作数据库
         boolean result = english_wordService.removeById(id);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
@@ -143,6 +147,10 @@ public class EnglishWordController {
         // 如果正在处理 或者 正在审核 不允许操作
         if ( WordStatus.getEnumByValue(oldEnglishWord.getStatus()) == WordStatus.REVIEWING) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "正在审核中，请稍后再试");
+        }
+
+        if ( WordStatus.getEnumByValue(oldEnglishWord.getStatus()) == WordStatus.PUBLISHED) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "已发布的单词不允许二次编辑");
         }
 
         english_word.setStatus(english_wordUpdateRequest.isDraft() ? WordStatus.DRAFT.name() : WordStatus.SUPPLIED.name());
@@ -265,5 +273,13 @@ public class EnglishWordController {
     @GetMapping("/duplicates")
     public BaseResponse<List<DuplicateWordDto>> getDuplicateWords() {
         return ResultUtils.success(english_wordService.findDuplicateWords());
+    }
+
+    /**
+     * 发布某个单词
+     */
+    @GetMapping("/publish")
+    public BaseResponse<Boolean> publishWord(@RequestParam("id") Long id) {
+        return ResultUtils.success(english_wordService.publishWord(id));
     }
 }

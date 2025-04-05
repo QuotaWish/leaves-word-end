@@ -81,4 +81,9 @@ public interface EnglishWordService extends IService<EnglishWord> {
      * 查询所有重复出现（count > 1）的 word_head 及其出现次数
      */
     List<DuplicateWordDto> findDuplicateWords();
+
+    /**
+     * 发布某个单词（只有已通过审核的单词可以发布）
+     */
+    boolean publishWord(Long id);
 }

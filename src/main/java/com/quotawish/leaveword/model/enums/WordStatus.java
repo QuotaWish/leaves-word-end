@@ -62,7 +62,7 @@ public enum WordStatus {
 
     public static WordStatus getEnumByValue(String value) {
         for (WordStatus status : values()) {
-            if (status.getDescription().equals(value)) {
+            if (status.getDescription().equals(value) || status.name().equals(value)) {
                 return status;
             }
         }

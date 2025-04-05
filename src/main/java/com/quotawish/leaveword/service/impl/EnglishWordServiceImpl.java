@@ -1,6 +1,8 @@
 package com.quotawish.leaveword.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -8,6 +10,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import com.quotawish.leaveword.common.ErrorCode;
 import com.quotawish.leaveword.constant.CommonConstant;
+import com.quotawish.leaveword.exception.BusinessException;
 import com.quotawish.leaveword.exception.ThrowUtils;
 import com.quotawish.leaveword.mapper.DictionaryWordMapper;
 import com.quotawish.leaveword.mapper.EnglishWordMapper;
@@ -332,4 +335,35 @@ public class EnglishWordServiceImpl extends ServiceImpl<EnglishWordMapper, Engli
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public boolean publishWord(Long id) {
+        EnglishWord byId = getById(id);
+        ThrowUtils.throwIf(byId == null, ErrorCode.NOT_FOUND_ERROR);
+
+        if ( WordStatus.getEnumByValue(byId.getStatus()) != WordStatus.APPROVED) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "只有审核通过的单词可以发布");
+        }
+
+        WordStatusChange wordStatusChange = new WordStatusChange();
+
+        wordStatusChange.setComment("Manually Published");
+        wordStatusChange.setWordId(id);
+        wordStatusChange.setStatus(WordStatus.PUBLISHED.name());
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.set("beforeStatus", byId.getStatus());
+        jsonObject.set("afterStatus", WordStatus.PUBLISHED.name());
+        jsonObject.set("executor", StpUtil.getLoginIdAsLong());
+
+        wordStatusChange.setInfo(jsonObject.toString());
+
+        byId.setStatus(WordStatus.PUBLISHED.name());
+
+        if (this.updateById(byId)) {
+            statusChangeService.save(wordStatusChange);
+            return true;
+        }
+
+        return false;
+    }
 }
