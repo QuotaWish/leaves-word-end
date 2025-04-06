@@ -3,6 +3,7 @@ package com.quotawish.leaveword.config;
 import cn.dev33.satoken.SaManager;
 import cn.dev33.satoken.context.SaHolder;
 import cn.dev33.satoken.context.model.SaRequest;
+import cn.dev33.satoken.exception.SaTokenException;
 import cn.dev33.satoken.filter.SaServletFilter;
 import cn.dev33.satoken.interceptor.SaInterceptor;
 import cn.dev33.satoken.router.SaHttpMethod;
@@ -14,16 +15,22 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.logging.Logger;
+
 @Configuration
 public class SaTokenConfigure implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new SaInterceptor()).addPathPatterns("/**");
+//        registry.addInterceptor(new SaInterceptor()).addPathPatterns("/**");
 
-        registry.addInterceptor(new SaInterceptor(handle -> StpUtil.checkLogin()))
-                .addPathPatterns("/**")
-                .excludePathPatterns("/user/**");
+        registry.addInterceptor(new SaInterceptor(handle -> {
+
+            SaRouter.match("/**")
+                    .notMatch(SaHttpMethod.OPTIONS)
+                    .notMatch("/user/**")
+                    .check(r -> StpUtil.checkLogin());
+        })).addPathPatterns("/**");
     }
 
     @Bean

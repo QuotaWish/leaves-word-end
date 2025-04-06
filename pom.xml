@@ -13,7 +13,7 @@
     <groupId>com.quotawish</groupId>
     <artifactId>leaveword-end</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>springboot-init</name>
+    <name>leaveword-end</name>
     <properties>
         <java.version>1.8</java.version>
     </properties>
@@ -145,7 +145,7 @@
         <dependency>
             <groupId>cn.dev33</groupId>
             <artifactId>sa-token-spring-boot-starter</artifactId>
-            <version>1.40.0</version>
+            <version>1.41.0</version>
         </dependency>
         <!-- Sa-Token 整合 RedisTemplate -->
         <dependency>
