@@ -14,10 +14,10 @@ spring:
   # todo 需替换配置
   redis:
     database: 1
-    host: localhost
+    host: 1Panel-redis-UrmH
     port: 6379
     timeout: 5000
-    password:
+    password: yXaS2jXz3Xz7BEHb
   # Elasticsearch 配置
   # todo 需替换配置
 #  elasticsearch:

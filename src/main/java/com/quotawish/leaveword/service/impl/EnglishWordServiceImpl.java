@@ -85,7 +85,8 @@ public class EnglishWordServiceImpl extends ServiceImpl<EnglishWordMapper, Engli
         // 从多字段中搜索
         if (StringUtils.isNotBlank(searchText)) {
             // 需要拼接查询条件
-            queryWrapper.and(qw -> qw.like("word_head", searchText).or().like("info", searchText));
+//            .or().like("info", searchText)
+            queryWrapper.and(qw -> qw.eq("word_head", searchText));
         }
         // 模糊查询
 //        queryWrapper.like(StringUtils.isNotBlank(title), "title", title);

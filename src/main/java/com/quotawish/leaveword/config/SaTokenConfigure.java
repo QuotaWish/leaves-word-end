@@ -43,7 +43,7 @@ public class SaTokenConfigure implements WebMvcConfigurer {
                             .setHeader("Access-Control-Allow-Credentials", "true")
                             .setHeader("Access-Control-Allow-Origin", origin)
                             .setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT")
-                            .setHeader("Access-Control-Allow-Headers", "leaf, content-type, authorization, baggage")
+                            .setHeader("Access-Control-Allow-Headers", "leaf, content-type, authorization, baggage, sentry-trace")
                             .setHeader("Access-Control-Max-Age", "3600")
                     ;
 
