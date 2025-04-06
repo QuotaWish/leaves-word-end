@@ -67,6 +67,12 @@ public class EnglishDictionaryVO implements Serializable {
      */
     private Date update_time;
 
+    private int total_words;
+
+    private int published_words;
+
+    private int approved_words;
+
     /**
      * 封装类转对象
      *

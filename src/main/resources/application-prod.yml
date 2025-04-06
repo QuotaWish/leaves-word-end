@@ -10,8 +10,6 @@ spring:
     url: jdbc:mysql://1Panel-mysql-V7XN:3306/leaves_word
     username: leaves_word
     password: PDYQAz4tFJQxCJDt
-  # Redis 配置
-  # todo 需替换配置
   redis:
     database: 1
     host: 1Panel-redis-UrmH
