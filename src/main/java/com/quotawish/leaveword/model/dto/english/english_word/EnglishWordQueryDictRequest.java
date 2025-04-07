@@ -18,7 +18,7 @@ import java.io.Serializable;
 public class EnglishWordQueryDictRequest extends PageRequest implements Serializable {
 
     @NotNull(message = "字典id不能为空")
-    private Long dict_id;
+    private String dict_id;
 
     /**
      * id

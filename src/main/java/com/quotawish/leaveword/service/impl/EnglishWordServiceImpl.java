@@ -118,7 +118,7 @@ public class EnglishWordServiceImpl extends ServiceImpl<EnglishWordMapper, Engli
                 .selectAll(EnglishWord.class)
                 .selectAssociation(EnglishWord.class, DictionaryWordWithWordVO::getWord)
                 .leftJoin(EnglishWord.class, EnglishWord::getId, DictionaryWord::getWord_id)
-                .eq(DictionaryWord::getDictionary_id, request.getDict_id())
+                .eq(DictionaryWord::getDictionary_id, Long.parseLong(request.getDict_id()))
                 ;
 
         // 从多字段中搜索

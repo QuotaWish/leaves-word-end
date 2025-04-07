@@ -67,10 +67,11 @@ public class EnglishDictionaryWithCategoryVO implements Serializable {
      */
     private Date update_time;
 
-    /**
-     * 标签列表
-     */
-//    private List<String> tagList;
+    private int total_words;
+
+    private int published_words;
+
+    private int approved_words;
 
     private List<Category> categoryList;
 
