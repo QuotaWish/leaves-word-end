@@ -345,3 +345,13 @@ CREATE TABLE exam_operation_log (
                                     description TEXT COMMENT '操作说明'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='操作日志表';
 
+
+-- 11. 用户配置表
+--     使用JSON字段存储用户的所有配置项
+CREATE TABLE user_config (
+    user_id BIGINT NOT NULL PRIMARY KEY COMMENT '用户ID',
+    config_json JSON NOT NULL COMMENT '用户配置JSON数据',
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户配置表';
+
