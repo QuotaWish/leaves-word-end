@@ -44,6 +44,10 @@ public class SaTokenConfigure implements WebMvcConfigurer {
                         origin = request.getHeader("Referer");
                     }
 
+                    if (origin == null) {
+                        origin = "*";
+                    }
+
                     System.out.println("origin: " + origin);
 
                     SaHolder.getResponse()
