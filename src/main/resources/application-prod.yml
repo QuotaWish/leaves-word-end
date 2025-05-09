@@ -7,15 +7,15 @@ spring:
   # todo 需替换配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://1Panel-mysql-V7XN:3306/leaves_word
+    url: jdbc:mysql://1Panel-mysql-OEXh:3306/leaves_word
     username: leaves_word
     password: PDYQAz4tFJQxCJDt
   redis:
     database: 1
-    host: 1Panel-redis-UrmH
+    host: 1Panel-redis-APcp
     port: 6379
     timeout: 5000
-    password: yXaS2jXz3Xz7BEHb
+    password: redis_6kzCSF
   # Elasticsearch 配置
   # todo 需替换配置
 #  elasticsearch:
