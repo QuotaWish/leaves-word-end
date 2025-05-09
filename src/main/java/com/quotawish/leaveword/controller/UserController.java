@@ -3,6 +3,9 @@ package com.quotawish.leaveword.controller;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.quotawish.leaveword.annotation.AuthCheck;
 import com.quotawish.leaveword.common.BaseResponse;
@@ -32,7 +35,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.quotawish.leaveword.service.impl.UserServiceImpl.SALT;
 
@@ -332,5 +337,16 @@ public class UserController {
         boolean result = userService.updateById(user);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(true);
+    }
+
+    /**
+     * 获取每日名言
+     *
+     * @param request
+     * @return 每日名言的引用和作者
+     */
+    @GetMapping("/dailyquote")
+    public String getDailyQuote(HttpServletRequest request) {
+        return HttpUtil.get("https://apiv3.shanbay.com/weapps/dailyquote/quote", 10000);
     }
 }
