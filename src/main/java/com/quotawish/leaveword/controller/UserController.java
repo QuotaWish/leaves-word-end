@@ -80,28 +80,6 @@ public class UserController {
         return ResultUtils.success(result);
     }
 
-    /**
-     * 用户登录
-     *
-     * @param userLoginRequest
-     * @param request
-     * @return
-     */
-    @PostMapping("/login")
-    public BaseResponse<LoginUserVO> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
-        if (userLoginRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        String userAccount = userLoginRequest.getUserAccount();
-        String userPassword = userLoginRequest.getUserPassword();
-        if (StringUtils.isAnyBlank(userAccount, userPassword)) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        LoginUserVO loginUserVO = userService.userLogin(userAccount, userPassword, request);
-
-        return ResultUtils.success(loginUserVO);
-    }
-
     @PostMapping("/login/token")
     public BaseResponse<AuthUserVO> userLoginToken(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
         if (userLoginRequest == null) {
@@ -109,10 +87,13 @@ public class UserController {
         }
         String userAccount = userLoginRequest.getUserAccount();
         String userPassword = userLoginRequest.getUserPassword();
-        if (StringUtils.isAnyBlank(userAccount, userPassword)) {
+        if (StringUtils.isAnyBlank(userAccount, userPassword, userLoginRequest.getPlatform(), userLoginRequest.getDeviceType())) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        LoginUserVO loginUserVO = userService.userLogin(userAccount, userPassword, request);
+
+        String deviceInfo = userLoginRequest.getPlatform() + ":" + userLoginRequest.getDeviceType();
+
+        LoginUserVO loginUserVO = userService.userLogin(userAccount, userPassword, deviceInfo, userLoginRequest.getDeviceId(), request);
         SaTokenInfo token = StpUtil.getTokenInfo();
 
         AuthUserVO authUser = new AuthUserVO();

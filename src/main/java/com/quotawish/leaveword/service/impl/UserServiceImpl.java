@@ -1,6 +1,9 @@
 package com.quotawish.leaveword.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.dev33.satoken.stp.parameter.SaLoginParameter;
+import cn.dev33.satoken.stp.parameter.enums.SaLogoutMode;
+import cn.dev33.satoken.stp.parameter.enums.SaReplacedRange;
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -82,7 +85,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public LoginUserVO userLogin(String userAccount, String userPassword, HttpServletRequest request) {
+    public LoginUserVO userLogin(String userAccount, String userPassword, String deviceInfo, String deviceId, HttpServletRequest request) {
         // 1. 校验
         if (StringUtils.isAnyBlank(userAccount, userPassword)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
@@ -109,7 +112,34 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 //        request.getSession().setAttribute(USER_LOGIN_STATE, user);
 //        request.getSession().setMaxInactiveInterval(3600 * 24 * 7);
 
-        StpUtil.login(user.getId());
+//        StpUtil.login(user.getId(), deviceInfo);
+
+        StpUtil.login(user.getId(), new SaLoginParameter()
+                .setDeviceType(deviceInfo)             // 此次登录的客户端设备类型, 一般用于完成 [同端互斥登录] 功能
+                .setDeviceId(deviceId)        // 此次登录的客户端设备ID, 登录成功后该设备将标记为可信任设备
+                .setIsLastingCookie(true)        // 是否为持久Cookie（临时Cookie在浏览器关闭时会自动删除，持久Cookie在重新打开后依然存在）
+                .setTimeout(60 * 60 * 24 * 7)    // 指定此次登录 token 的有效期, 单位:秒，-1=永久有效
+                .setActiveTimeout(60 * 60 * 24 * 7) // 指定此次登录 token 的最低活跃频率, 单位:秒，-1=不进行活跃检查
+//                .setIsConcurrent(true)           // 是否允许同一账号多地同时登录 （为 true 时允许一起登录, 为 false 时新登录挤掉旧登录）
+                .setIsShare(false)                // 在多人登录同一账号时，是否共用一个 token （为 true 时所有登录共用一个token, 为 false 时每次登录新建一个 token）
+//                .setMaxLoginCount(12)            // 同一账号最大登录数量，-1代表不限 （只有在 isConcurrent=true, isShare=false 时此配置项才有意义）
+                .setMaxTryTimes(12)              // 在每次创建 token 时的最高循环次数，用于保证 token 唯一性（-1=不循环尝试，直接使用）
+//                .setExtra("key", "value")        // 记录在 Token 上的扩展参数（只在 jwt 模式下生效）
+                .setIsWriteHeader(true)         // 是否在登录后将 Token 写入到响应头
+//                .setTerminalExtra("key", "value")// 本次登录挂载到 SaTerminalInfo 的自定义扩展数据
+                .setReplacedRange(SaReplacedRange.CURR_DEVICE_TYPE) // 顶人下线的范围: CURR_DEVICE_TYPE=当前指定的设备类型端, ALL_DEVICE_TYPE=所有设备类型端
+//                .setOverflowLogoutMode(SaLogoutMode.LOGOUT)         // 溢出 maxLoginCount 的客户端，将以何种方式注销下线: LOGOUT=注销下线, KICKOUT=踢人下线, REPLACED=顶人下线
+//                .setRightNowCreateTokenSession(true)                // 是否立即创建对应的 Token-Session （true=在登录时立即创建，false=在第一次调用 getTokenSession() 时创建）
+//                .setupCookieConfig(cookie->{     // 设置 Cookie 配置项
+//                            cookie.setDomain("sa-token.cc");  // 设置：作用域
+//                            cookie.setPath("/shop");          // 设置：路径 （一般只有当你在一个域名下部署多个项目时才会用到此值。）
+//                            cookie.setSecure(true);           // 设置：是否只在 https 协议下有效
+//                            cookie.setHttpOnly(true);         // 设置：是否禁止 js 操作 Cookie
+//                            cookie.setSameSite("Lax");        // 设置：第三方限制级别（Strict=完全禁止，Lax=部分允许，None=不限制）
+//                            cookie.addExtraAttr("aa", "bb");  // 设置：额外扩展属性
+//                        }
+                );
+
 
         return this.getLoginUserVO(user);
     }
